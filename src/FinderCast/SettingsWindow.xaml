@@ -1,0 +1,94 @@
+<Window
+    x:Class="FinderCast.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:FinderCast.Controls"
+    Title="FinderCast">
+
+    <!--
+        La construcción de la ventana de ShutterGrid, en píxeles lógicos: una ventana nativa de
+        Windows 11 (su barra de título, solo con los botones, la dibuja Windows) con 360 de ancho
+        por dentro, el logo de 64 px a 20 px de la barra, el
+        nombre 8 px debajo (caja de 26 px) y la versión 30 px por debajo del nombre (caja de
+        14 px). Las filas de 48 px empiezan 170 px bajo la barra, con márgenes laterales de 24 px
+        y una línea fina solo entre ajustes; 16 px de margen inferior.
+    -->
+    <Grid x:Name="Root" PreviewKeyDown="OnRootPreviewKeyDown" PointerPressed="OnRootPointerPressed">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="64" />
+            <RowDefinition Height="8" />
+            <RowDefinition Height="26" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="34" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="16" />
+        </Grid.RowDefinitions>
+
+        <!-- El logo es un enlace a la donación, con su información emergente. -->
+        <controls:PressTarget x:Name="LogoLink" Grid.Row="1" Width="64" Height="64" HorizontalAlignment="Center">
+            <Image x:Name="Logo" Width="64" Height="64" />
+        </controls:PressTarget>
+
+        <TextBlock x:Name="NameText" Grid.Row="3" Text="FinderCast"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontFamily="{StaticResource FcDisplayFont}" FontSize="{StaticResource FcTitleSize}"
+                   FontWeight="SemiBold" Foreground="{ThemeResource FcTextBrush}" />
+
+        <TextBlock x:Name="VersionText" Grid.Row="5"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontFamily="{StaticResource FcSmallFont}" FontSize="{StaticResource FcCaptionSize}"
+                   Foreground="{ThemeResource FcSecondaryBrush}" />
+
+        <!-- Fila: abrir al iniciar Windows -->
+        <Border Grid.Row="7" Margin="24,0" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FcDividerBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StartupLabel" Style="{StaticResource FcRowLabelStyle}" />
+                <!-- La zona de clic sobresale 6 px: la pista queda alineada con el margen. -->
+                <controls:Switch x:Name="StartupSwitch" Grid.Column="1" Margin="0,0,-6,0" />
+            </Grid>
+        </Border>
+
+        <!-- Fila: icono en la bandeja -->
+        <Border Grid.Row="8" Margin="24,0" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FcDividerBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="TrayLabel" Style="{StaticResource FcRowLabelStyle}" />
+                <controls:Switch x:Name="TraySwitch" Grid.Column="1" Margin="0,0,-6,0" />
+            </Grid>
+        </Border>
+
+        <!-- Fila: idioma -->
+        <Border Grid.Row="9" Margin="24,0" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FcDividerBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="LanguageLabel" Style="{StaticResource FcRowLabelStyle}" />
+                <controls:DropdownButton x:Name="LanguageButton" Grid.Column="1" />
+            </Grid>
+        </Border>
+
+        <!-- Fila: atajo global (la última, sin línea debajo). Clic para grabar uno nuevo. -->
+        <Grid Grid.Row="10" Margin="24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="ShortcutLabel" Style="{StaticResource FcRowLabelStyle}" />
+            <controls:ShortcutPicker x:Name="ShortcutPicker" Grid.Column="1" />
+        </Grid>
+    </Grid>
+</Window>

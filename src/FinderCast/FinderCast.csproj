@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>FinderCast</RootNamespace>
+    <AssemblyName>FinderCast</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\FinderCast.ico</ApplicationIcon>
+
+    <!-- WinUI 3 sin paquete MSIX: un .exe portable con el Windows App SDK dentro. -->
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <EnableMsixTooling>true</EnableMsixTooling>
+
+    <!-- Los textos de .NET y WinForms, solo en los idiomas de la app. -->
+    <SatelliteResourceLanguages>es;en</SatelliteResourceLanguages>
+
+    <!-- Main propio (Program.cs): la segunda instancia avisa a la primera sin arrancar XAML. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      El recolector conserva menos memoria libre: la app pesa menos mientras espera el atajo.
+    -->
+    <RuntimeHostConfigurationOption Include="System.GC.ConserveMemory" Value="5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Icono de la app: .png para el encabezado de los ajustes y .ico para ventanas y bandeja. -->
+    <Content Include="Assets\FinderCast.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\FinderCast.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      WinForms solo para el icono y el menú de la bandeja, los mismos de ShutterGrid. Se referencia
+      el framework a mano: con UseWindowsForms el SDK compilaría los XAML de WinUI como si fueran WPF.
+    -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Solo los componentes del Windows App SDK que usa la app (WinUI, ventanas y texto). El paquete
+      completo añade además IA, ML y widgets: unos 50 MB en la versión portable sin ningún uso.
+    -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="1.8.260803003" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="1.8.260803002" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="1.8.260708001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="1.8.25122902" />
+  </ItemGroup>
+
+</Project>
