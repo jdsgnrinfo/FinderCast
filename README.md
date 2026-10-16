@@ -45,10 +45,11 @@ abrir FinderCast desde el menú Inicio muestra los ajustes.
 ## Descargar
 
 1. Descarga `FinderCast-<versión>-portable.zip` desde [Releases](../../releases).
-2. Descomprímelo donde quieras y abre `FinderCast\FinderCast.exe`.
+2. Descomprímelo donde quieras y abre `FinderCast.exe`.
 
-No hace falta instalar nada: la carpeta lleva dentro .NET y el Windows App SDK. Para quitarlo, usa
-**Salir** en el menú de la bandeja y borra la carpeta. Como el ejecutable no está firmado, la
+No hace falta instalar nada: el programa lleva dentro .NET y el Windows App SDK. La primera vez
+tarda un poco más en abrirse, porque prepara sus partes en la carpeta temporal. Para quitarlo,
+usa **Salir** en el menú de la bandeja y borra el `.exe`. Como el ejecutable no está firmado, la
 primera vez Windows SmartScreen puede pedir confirmación (*Más información → Ejecutar de todas formas*).
 
 **Requisitos:** Windows 10 (versión 2004 o posterior) u 11, de 64 bits. Acrylic y Mica se ven en
@@ -66,8 +67,8 @@ dotnet build
 El ejecutable queda en `src/FinderCast/bin/Debug/net10.0-windows10.0.19041.0/win-x64/FinderCast.exe`.
 Lleva el Windows App SDK dentro, así que no hace falta instalar nada más.
 
-Paquete de una versión (`artifacts/FinderCast-<versión>-portable.zip`; la versión sale de
-`Directory.Build.props`):
+Paquete de una versión: un único `FinderCast.exe` comprimido, en
+`artifacts/FinderCast-<versión>-portable.zip` (la versión sale de `Directory.Build.props`):
 
 ```bash
 powershell -ExecutionPolicy Bypass -File scripts/publicar.ps1
