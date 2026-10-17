@@ -53,6 +53,12 @@ del ejecutable único aún no estaba publicado.
 - Mica más claro en los ajustes (Mica Alt y un Mica a medida gris azulado): se dejó el Mica
   estándar. El Mica a medida funcionaba extendiendo el contenido bajo la barra de título.
 
+**Después de la 0.2.1 (sin publicar)**
+- Ajuste *Mostrar las 5 últimas apps abiertas* (`ShowRecentApps`, desactivado por defecto). Las
+  claves de las últimas apps se guardan en `RecentApps` del `settings.json`, la más reciente
+  primero, y se quitan las desinstaladas. Con la búsqueda vacía: activado muestra la tarjeta con
+  esas apps (si hay alguna); desactivado, solo la barra. Probado con capturas en los dos estados.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

@@ -25,6 +25,7 @@
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
+            <RowDefinition Height="48" />
             <!-- Los dos atajos son un grupo: filas más bajas, más juntas. -->
             <RowDefinition Height="42" />
             <RowDefinition Height="42" />
@@ -71,8 +72,20 @@
             </Grid>
         </Border>
 
-        <!-- Fila: idioma -->
+        <!-- Fila: últimas apps abiertas con la búsqueda vacía -->
         <Border Grid.Row="9" Margin="24,0" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FcDividerBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="RecentLabel" Style="{StaticResource FcRowLabelStyle}" />
+                <controls:Switch x:Name="RecentSwitch" Grid.Column="1" Margin="0,0,-6,0" />
+            </Grid>
+        </Border>
+
+        <!-- Fila: idioma -->
+        <Border Grid.Row="10" Margin="24,0" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FcDividerBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -84,7 +97,7 @@
         </Border>
 
         <!-- Fila: atajo global. Clic para grabar uno nuevo. Sin línea: forma grupo con la siguiente. -->
-        <Grid Grid.Row="10" Margin="24,3,24,0">
+        <Grid Grid.Row="11" Margin="24,3,24,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -94,7 +107,7 @@
         </Grid>
 
         <!-- Fila: atajo para abrir como administrador (la última, sin línea debajo). Se graba igual. -->
-        <Grid Grid.Row="11" Margin="24,0,24,3">
+        <Grid Grid.Row="12" Margin="24,0,24,3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

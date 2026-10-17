@@ -162,6 +162,16 @@ public sealed partial class MainWindow : Window
         Close();
     }
 
+    private const int RecentCount = 5;
+
+    /// <summary>Las últimas apps abiertas que siguen instaladas, o ninguna si está desactivado.</summary>
+    private IReadOnlyList<LaunchItem> RecentItems()
+    {
+        if (!_settings.ShowRecentApps) return [];
+        var byKey = _index.Items.ToDictionary(i => i.Key, StringComparer.OrdinalIgnoreCase);
+        return [.. _settings.RecentApps.Select(k => byKey.GetValueOrDefault(k)).OfType<LaunchItem>().Take(RecentCount)];
+    }
+
     private ListView Results => _panel.List;
 
     private TextBlock EmptyText => _panel.Empty;
@@ -182,7 +192,9 @@ public sealed partial class MainWindow : Window
 
     private void UpdateResults()
     {
-        var ranked = Search.Rank(SearchBox.Text, _index.Items, _settings.Launches);
+        var empty = SearchBox.Text.Trim().Length == 0;
+        // Con la búsqueda vacía, las últimas apps abiertas (si está activado en los ajustes).
+        var ranked = empty ? RecentItems() : Search.Rank(SearchBox.Text, _index.Items, _settings.Launches);
         _results.Clear();
         foreach (var item in ranked) _results.Add(new ResultItem(item));
 
@@ -190,8 +202,8 @@ public sealed partial class MainWindow : Window
         if (_results.Count > 0) Results.ScrollIntoView(_results[0]);
         EmptyText.Visibility = _results.Count == 0 && SearchBox.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        // Sin nada escrito, solo la barra de búsqueda.
-        if (SearchBox.Text.Trim().Length == 0) _panel.Hide();
+        // Sin nada escrito, solo la barra de búsqueda (o las recientes, si hay y están activadas).
+        if (empty && _results.Count == 0) _panel.Hide();
         else _panel.ShowAt(_panelBounds);
 
         foreach (var result in _results) _ = result.LoadIconAsync();
@@ -209,8 +221,8 @@ public sealed partial class MainWindow : Window
                 MoveSelection(-1);
                 break;
             case VirtualKey.Enter:
-                // Sin texto la lista está oculta: Enter no abre nada que no se vea.
-                if (SearchBox.Text.Trim().Length > 0 && Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
+                // Con la lista oculta, Enter no abre nada que no se vea.
+                if (_results.Count > 0 && Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
                 break;
             case VirtualKey.Escape:
                 HideLauncher();
@@ -257,8 +269,12 @@ public sealed partial class MainWindow : Window
         if (item.Kind == LaunchKind.Application)
         {
             _settings.Launches[item.Key] = _settings.Launches.GetValueOrDefault(item.Key) + 1;
+            _settings.RecentApps.RemoveAll(k => k.Equals(item.Key, StringComparison.OrdinalIgnoreCase));
+            _settings.RecentApps.Insert(0, item.Key);
+            if (_settings.RecentApps.Count > RecentCount) _settings.RecentApps.RemoveRange(RecentCount, _settings.RecentApps.Count - RecentCount);
             // Las apps desinstaladas dejan de contar: el archivo de ajustes no crece sin fin.
             foreach (var key in _settings.Launches.Keys.Where(k => !_index.Contains(k)).ToList()) _settings.Launches.Remove(key);
+            _settings.RecentApps.RemoveAll(k => !_index.Contains(k));
             _store.Save(_settings);
         }
 

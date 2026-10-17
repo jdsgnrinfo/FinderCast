@@ -3,6 +3,14 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+### Añadido
+
+- Ajuste *Mostrar las 5 últimas apps abiertas* (desactivado por defecto). Activado, al abrir el
+  lanzador sin escribir nada se ven las cinco últimas apps abiertas; desactivado, solo la barra de
+  búsqueda hasta que se escribe algo.
+
 ## [0.2.1] - 2026-10-17
 
 ### Añadido
