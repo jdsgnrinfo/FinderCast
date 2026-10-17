@@ -3,6 +3,20 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [0.2.0] - 2026-10-17
+
+### Añadido
+
+- **Apps de Microsoft Store** (Calculadora, Fotos, Configuración…) en los resultados, con su icono.
+  Se vuelven a leer al abrir el lanzador si han pasado unos minutos.
+- `Ctrl` `Enter` abre la ubicación del acceso directo en el Explorador y `Ctrl` `Mayús` `Enter`
+  abre la app como administrador.
+
+### Cambiado
+
+- La versión portable es un único `FinderCast.exe` comprimido.
+- Las apps desinstaladas dejan de contar en el historial de uso guardado en los ajustes.
+
 ## [0.1.0] - 2026-10-15
 
 Primera versión.
@@ -24,4 +38,5 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.2.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.1.0

@@ -45,6 +45,7 @@ internal sealed class AppIndex : IDisposable
     private readonly List<FileSystemWatcher> _watchers = [];
     private readonly Timer _debounce;
     private IReadOnlyList<LaunchItem> _apps = [];
+    private DateTime _scannedAt;
 
     public AppIndex(IReadOnlyList<LaunchItem> commands)
     {
@@ -82,11 +83,27 @@ internal sealed class AppIndex : IDisposable
     public IReadOnlyList<LaunchItem> Items { get; private set; } = [];
 
     /// <summary>Lee de nuevo las carpetas en un hilo de fondo.</summary>
-    public void Refresh() => Task.Run(() =>
+    public void Refresh()
     {
-        _apps = Scan();
-        Items = [.. _apps, .. Commands];
-    });
+        _scannedAt = DateTime.UtcNow;
+        Task.Run(() =>
+        {
+            _apps = Scan();
+            Items = [.. _apps, .. Commands];
+        });
+    }
+
+    /// <summary>
+    /// Las apps de Microsoft Store no dejan accesos en las carpetas vigiladas: se vuelven a leer al
+    /// abrir el lanzador si la última lectura tiene más de unos minutos.
+    /// </summary>
+    public void RefreshIfStale()
+    {
+        if (DateTime.UtcNow - _scannedAt > TimeSpan.FromMinutes(2)) Refresh();
+    }
+
+    /// <summary>True si el resultado con esa clave sigue en el índice.</summary>
+    public bool Contains(string key) => _apps.Any(i => i.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
 
     public void Dispose()
     {
@@ -119,6 +136,44 @@ internal sealed class AppIndex : IDisposable
                 byName.TryAdd(name, new LaunchItem(name, file, LaunchKind.Application) { Path = file });
             }
         }
+        // Apps de Microsoft Store (Calculadora, Fotos…): si ya hay un acceso con el mismo nombre, gana el acceso.
+        foreach (var app in PackagedApps()) byName.TryAdd(app.Name, app);
+
         return [.. byName.Values.OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase)];
+    }
+
+    /// <summary>Apps empaquetadas del usuario, que se abren por su id: shell:AppsFolder\&lt;AUMID&gt;.</summary>
+    private static List<LaunchItem> PackagedApps()
+    {
+        var apps = new List<LaunchItem>();
+        try
+        {
+            var manager = new Windows.Management.Deployment.PackageManager();
+            foreach (var package in manager.FindPackagesForUser(""))
+            {
+                try
+                {
+                    if (package.IsFramework || package.IsResourcePackage || package.IsBundle) continue;
+                    foreach (var entry in package.GetAppListEntries())
+                    {
+                        var name = entry.DisplayInfo.DisplayName?.Trim();
+                        var id = entry.AppUserModelId;
+                        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(id)) continue;
+                        if (name.StartsWith("ms-resource:", StringComparison.OrdinalIgnoreCase)) continue;
+                        var path = @"shell:AppsFolder\" + id;
+                        apps.Add(new LaunchItem(name, path, LaunchKind.Application) { Path = path });
+                    }
+                }
+                catch (Exception)
+                {
+                    // Un paquete dañado o a medio instalar no impide leer los demás.
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // Sin acceso al catálogo de paquetes quedan los accesos del menú Inicio.
+        }
+        return apps;
     }
 }

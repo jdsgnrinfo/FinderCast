@@ -111,6 +111,7 @@ public sealed partial class MainWindow : Window
             area.Y + (int)((area.Height - height) * 0.3),
             width, height));
 
+        _index.RefreshIfStale();
         SearchBox.Text = "";
         UpdateResults();
 
@@ -168,7 +169,7 @@ public sealed partial class MainWindow : Window
                 MoveSelection(-1);
                 break;
             case VirtualKey.Enter:
-                if (Results.SelectedItem is ResultItem selected) Launch(selected.Item);
+                if (Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
                 break;
             case VirtualKey.Escape:
                 HideLauncher();
@@ -199,13 +200,39 @@ public sealed partial class MainWindow : Window
         if (e.ClickedItem is ResultItem result) Launch(result.Item);
     }
 
-    private void Launch(LaunchItem item)
+    /// <summary>Ctrl+Enter abre la ubicación del archivo; Ctrl+Mayús+Enter, como administrador.</summary>
+    private static LaunchMode LaunchModeFromKeys()
+    {
+        static bool Down(VirtualKey key) => Microsoft.UI.Input.InputKeyboardSource
+            .GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+        if (!Down(VirtualKey.Control)) return LaunchMode.Open;
+        return Down(VirtualKey.Shift) ? LaunchMode.RunAsAdmin : LaunchMode.OpenLocation;
+    }
+
+    private void Launch(LaunchItem item, LaunchMode mode = LaunchMode.Open)
     {
         HideLauncher();
+
+        // Las apps de Microsoft Store no tienen archivo que mostrar ni se elevan así: se abren sin más.
+        var packaged = item.Path?.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) == true;
+        if (item.Kind == LaunchKind.Application && !packaged && mode == LaunchMode.OpenLocation)
+        {
+            try
+            {
+                Process.Start("explorer.exe", $"/select,\"{item.Path}\"");
+            }
+            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
+            {
+            }
+            return;
+        }
 
         if (item.Kind == LaunchKind.Application)
         {
             _settings.Launches[item.Key] = _settings.Launches.GetValueOrDefault(item.Key) + 1;
+            // Las apps desinstaladas dejan de contar: el archivo de ajustes no crece sin fin.
+            foreach (var key in _settings.Launches.Keys.Where(k => !_index.Contains(k)).ToList()) _settings.Launches.Remove(key);
             _store.Save(_settings);
         }
 
@@ -217,13 +244,23 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            Process.Start(new ProcessStartInfo(item.Path!) { UseShellExecute = true });
+            var start = new ProcessStartInfo(item.Path!) { UseShellExecute = true };
+            if (mode == LaunchMode.RunAsAdmin && !packaged) start.Verb = "runas";
+            Process.Start(start);
         }
+        // También si se cancela el aviso de Control de cuentas de usuario.
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or FileNotFoundException)
         {
             // El acceso directo apunta a algo que ya no existe: el índice se pondrá al día solo.
         }
     }
+}
+
+internal enum LaunchMode
+{
+    Open,
+    OpenLocation,
+    RunAsAdmin,
 }
 
 /// <summary>Un resultado de la lista, con su icono cargado en segundo plano.</summary>
