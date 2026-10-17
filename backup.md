@@ -1,0 +1,59 @@
+# Historial de trabajo
+
+Registro de lo que se ha hecho en FinderCast, sesión a sesión, para retomar el trabajo desde
+cualquier ordenador. Las versiones publicadas y sus cambios están en [CHANGELOG.md](CHANGELOG.md);
+aquí van además las decisiones, lo que se probó y lo que queda pendiente.
+
+## Normas del repositorio
+
+- Autor único: **Jotadsgnr** (`Jotadsgnr <jdsgnr.info@gmail.com>`). Ningún commit, archivo,
+  release ni metadato lleva coautorías, créditos ni menciones a herramientas de IA.
+- Textos de la app, comentarios del código, commits y documentación en español.
+- Cada versión: subir `<Version>` en `Directory.Build.props`, pasar la sección *Sin publicar* del
+  CHANGELOG a la versión con su fecha, commit, etiqueta `vX.Y.Z`, generar el zip con
+  `scripts/publicar.ps1` y publicarlo en GitHub Releases.
+- Este archivo se actualiza al final de cada sesión de trabajo.
+
+## 2026-10-15 · Versión 0.1.0
+
+- Primera versión: lanzador sobre Acrylic con `Alt` `Espacio`, índice del menú Inicio, búsqueda sin
+  tildes y por iniciales, ajustes con el diseño de ShutterGrid sobre Mica, icono en la bandeja.
+- Versión portable en un único `FinderCast.exe` comprimido.
+- En este ordenador PowerToys Run también usa `Alt` `Espacio`.
+
+## 2026-10-17 · Versiones 0.2.0 y 0.2.1
+
+**Revisión del proyecto y de GitHub.** Había una sola release (0.1.0), sin issues ni PRs; el commit
+del ejecutable único aún no estaba publicado.
+
+**0.2.0**
+- Apps de Microsoft Store en los resultados (`PackageManager`, se abren con `shell:AppsFolder\<AUMID>`).
+- Ejecutar como administrador desde el lanzador.
+- Limpieza del historial de uso de apps desinstaladas.
+
+**0.2.1**
+- El lanzador pasa a dos ventanas: `MainWindow` (barra de búsqueda) y `ResultsWindow` (resultados
+  y pie). La de resultados no se activa nunca (`WS_EX_NOACTIVATE`) para que el teclado siga en la
+  búsqueda; por eso usa `ActiveAcrylic`, que fuerza el aspecto de ventana activa, y las dos tienen
+  un borde de color fijo.
+- Sin texto escrito solo se ve la barra de búsqueda; los resultados muestran justo cinco filas.
+- Medidas actuales: ancho 600, barra 56 de alto, texto 15, lupa y engranaje 18, filas 48, iconos 26,
+  nombres 14, tipo 12. Texto de la barra: «Buscar aplicaciones…».
+- Engranaje en la barra para abrir los ajustes (sustituye al doble clic en el logo del pie, que se quitó).
+- Versión del programa junto al resultado elegido.
+- Nombres traducidos de los accesos de Windows (`desktop.ini` → `[LocalizedFileNames]`): ahora se
+  encuentra *Administrador de tareas*, también por *Task Manager*.
+- Atajo para abrir como administrador configurable: se graba en los ajustes igual que el atajo para
+  abrir (modificadoras + `Enter`, por defecto `Ctrl` `Enter`). Las dos filas forman un grupo sin
+  línea entre ellas.
+
+**Probado y descartado**
+- Radio de esquinas propio (8 + 2 px): Windows 11 solo ofrece 8, 4 o 0 px; dibujarlas a mano
+  pierde el desenfoque real o deja bordes dentados. Se quedan los 8 px del sistema.
+- Mica más claro en los ajustes (Mica Alt y un Mica a medida gris azulado): se dejó el Mica
+  estándar. El Mica a medida funcionaba extendiendo el contenido bajo la barra de título.
+
+**Ideas pendientes**
+- Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
+- Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).
+- Tarjeta de resultados que se ajuste a la cantidad de resultados.

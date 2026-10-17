@@ -3,27 +3,27 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
-## [Sin publicar]
+## [0.2.1] - 2026-10-17
 
 ### Añadido
 
 - Engranaje en la barra de búsqueda para abrir los ajustes.
-- Ajuste para grabar el atajo de *Abrir como administrador*, como el atajo para abrir: una o más
-  modificadoras (`Ctrl`, `Alt`, `Shift`) con `Enter`. El pie del lanzador muestra el elegido.
+- Ajuste para grabar el atajo de *Abrir como administrador*, igual que el atajo para abrir: una o
+  más modificadoras (`Ctrl`, `Alt`, `Shift`) con `Enter`. El pie del lanzador muestra el elegido.
 - Versión del programa junto al resultado elegido.
+
+### Cambiado
+
+- El lanzador son dos tarjetas: la búsqueda arriba y los resultados debajo. Sin nada escrito solo
+  se ve la barra, y los resultados muestran cinco filas completas.
+- `Ctrl` `Enter` abre la app como administrador (ya no abre su ubicación).
+- El pie del lanzador muestra los atajos *Abrir como administrador* y *Abrir*, sin el logo ni el
+  nombre. Los ajustes se abren con el engranaje, la bandeja o el comando *Ajustes de FinderCast*.
 
 ### Corregido
 
 - Las apps de Windows salen con su nombre traducido (*Administrador de tareas*, no *Task Manager*)
   y se encuentran por los dos nombres.
-
-### Cambiado
-
-- El lanzador son dos tarjetas: la búsqueda arriba y los resultados debajo, con filas más compactas.
-
-- `Ctrl` `Enter` abre la app como administrador (ya no abre su ubicación).
-- El pie del lanzador muestra los atajos *Abrir como administrador* y *Abrir*, sin el logo ni el
-  nombre. Los ajustes siguen en la bandeja y en el comando *Ajustes de FinderCast*.
 
 ## [0.2.0] - 2026-10-17
 
@@ -60,5 +60,6 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.2.1]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.1.0
