@@ -35,6 +35,7 @@ internal sealed record Strings
     public required string Command { get; init; }
     public required string NoResults { get; init; }
     public required string OpenAction { get; init; }
+    public required string RunAsAdminAction { get; init; }
     public required string SettingsCommand { get; init; }
     public required string QuitCommand { get; init; }
 
@@ -62,6 +63,7 @@ internal sealed record Strings
         Command = "Comando",
         NoResults = "Sin resultados",
         OpenAction = "Abrir",
+        RunAsAdminAction = "Abrir como administrador",
         SettingsCommand = "Ajustes de FinderCast",
         QuitCommand = "Salir de FinderCast",
         Open = "Abrir {0}",
@@ -88,6 +90,7 @@ internal sealed record Strings
         Command = "Command",
         NoResults = "No results",
         OpenAction = "Open",
+        RunAsAdminAction = "Run as administrator",
         SettingsCommand = "FinderCast Settings",
         QuitCommand = "Quit FinderCast",
         Open = "Open {0}",

@@ -61,14 +61,8 @@ public sealed partial class MainWindow : Window
         // Sin barra de título, con el borde, las esquinas y la sombra originales de Windows 11. No
         // se usa ExtendsContentIntoTitleBar: WinUI deja entonces una línea oscura en el borde superior.
         WindowChrome.UseNativeBorderWithoutTitleBar(this);
-        // El pie arrastra la ventana, salvo el logo y el nombre, que responden al doble clic.
+        // El pie arrastra la ventana.
         Footer.SizeChanged += (_, _) => UpdateRegions();
-        Brand.SizeChanged += (_, _) => UpdateRegions();
-        Brand.DoubleTapped += (_, _) =>
-        {
-            HideLauncher();
-            SettingsRequested?.Invoke();
-        };
 
         AppWindow.Closing += (_, args) =>
         {
@@ -81,13 +75,9 @@ public sealed partial class MainWindow : Window
             if (args.WindowActivationState == WindowActivationState.Deactivated) HideLauncher();
         };
 
-        FooterLogo.Source = new BitmapImage(new Uri(App.LogoPath));
         ApplyStrings();
         Strings.Changed += ApplyStrings;
     }
-
-    /// <summary>Doble clic en el logo y el nombre del pie: abrir los ajustes.</summary>
-    public event Action? SettingsRequested;
 
     public bool IsShown => AppWindow.IsVisible;
 
@@ -132,7 +122,7 @@ public sealed partial class MainWindow : Window
         Close();
     }
 
-    private void UpdateRegions() => WindowChrome.SetRegions(this, Footer, passthrough: Brand);
+    private void UpdateRegions() => WindowChrome.SetRegions(this, Footer);
 
     private void ApplyStrings()
     {
@@ -140,6 +130,7 @@ public sealed partial class MainWindow : Window
         SearchBox.PlaceholderText = text.SearchPlaceholder;
         EmptyText.Text = text.NoResults;
         OpenActionText.Text = text.OpenAction;
+        AdminActionText.Text = text.RunAsAdminAction;
     }
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e) => UpdateResults();
@@ -200,33 +191,17 @@ public sealed partial class MainWindow : Window
         if (e.ClickedItem is ResultItem result) Launch(result.Item);
     }
 
-    /// <summary>Ctrl+Enter abre la ubicación del archivo; Ctrl+Mayús+Enter, como administrador.</summary>
+    /// <summary>Ctrl+Enter abre la app como administrador.</summary>
     private static LaunchMode LaunchModeFromKeys()
-    {
-        static bool Down(VirtualKey key) => Microsoft.UI.Input.InputKeyboardSource
-            .GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-
-        if (!Down(VirtualKey.Control)) return LaunchMode.Open;
-        return Down(VirtualKey.Shift) ? LaunchMode.RunAsAdmin : LaunchMode.OpenLocation;
-    }
+        => Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control)
+            .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down) ? LaunchMode.RunAsAdmin : LaunchMode.Open;
 
     private void Launch(LaunchItem item, LaunchMode mode = LaunchMode.Open)
     {
         HideLauncher();
 
-        // Las apps de Microsoft Store no tienen archivo que mostrar ni se elevan así: se abren sin más.
+        // Las apps de Microsoft Store no se elevan así: se abren sin más.
         var packaged = item.Path?.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) == true;
-        if (item.Kind == LaunchKind.Application && !packaged && mode == LaunchMode.OpenLocation)
-        {
-            try
-            {
-                Process.Start("explorer.exe", $"/select,\"{item.Path}\"");
-            }
-            catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
-            {
-            }
-            return;
-        }
 
         if (item.Kind == LaunchKind.Application)
         {
@@ -259,7 +234,6 @@ public sealed partial class MainWindow : Window
 internal enum LaunchMode
 {
     Open,
-    OpenLocation,
     RunAsAdmin,
 }
 

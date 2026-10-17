@@ -3,6 +3,14 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+### Cambiado
+
+- `Ctrl` `Enter` abre la app como administrador (ya no abre su ubicación).
+- El pie del lanzador muestra los atajos *Abrir como administrador* y *Abrir*, sin el logo ni el
+  nombre. Los ajustes siguen en la bandeja y en el comando *Ajustes de FinderCast*.
+
 ## [0.2.0] - 2026-10-17
 
 ### Añadido

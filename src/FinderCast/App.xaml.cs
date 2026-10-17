@@ -49,7 +49,6 @@ public partial class App : Application
         Strings.Changed += () => _index.Commands = CreateCommands();
 
         _launcher = new MainWindow(_index, _settings, _store);
-        _launcher.SettingsRequested += ShowSettings;
         _settingsWindow = new SettingsWindow(_settings, _store, ChangeHotKey);
         _settingsWindow.TrayIconSettingChanged += () => _tray!.Visible = _settings.ShowTrayIcon;
 

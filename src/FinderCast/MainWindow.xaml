@@ -87,27 +87,27 @@
 
         <Rectangle Grid.Row="3" Fill="{ThemeResource FcDividerBrush}" />
 
-        <!-- Pie: identidad a la izquierda, acción de Enter a la derecha -->
-        <Grid x:Name="Footer" Grid.Row="4" Padding="16,0" ColumnSpacing="8" Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <!-- Logo y nombre: doble clic para abrir los ajustes. -->
-            <StackPanel x:Name="Brand" Orientation="Horizontal" Spacing="8" Background="Transparent" VerticalAlignment="Stretch">
-                <Image x:Name="FooterLogo" Width="18" Height="18" VerticalAlignment="Center" />
-                <TextBlock Text="FinderCast" VerticalAlignment="Center"
-                           FontFamily="{StaticResource FcTextFont}" FontSize="12"
-                           Foreground="{ThemeResource FcSecondaryBrush}" />
-            </StackPanel>
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <TextBlock x:Name="OpenActionText" VerticalAlignment="Center"
+        <!-- Pie: atajos de la acción elegida, a la derecha. Arrastra la ventana. -->
+        <Grid x:Name="Footer" Grid.Row="4" Padding="16,0" Background="Transparent">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <TextBlock x:Name="AdminActionText" VerticalAlignment="Center" Margin="0,0,4,0"
                            FontFamily="{StaticResource FcTextFont}" FontSize="12"
                            Foreground="{ThemeResource FcTextBrush}" />
                 <controls:Outline Radius="4" Height="20" MinWidth="20"
                                   Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
-                    <TextBlock Text="↵" Margin="5,0" Style="{StaticResource FcKeyCapTextStyle}" />
+                    <TextBlock Text="Ctrl" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
+                </controls:Outline>
+                <controls:Outline Radius="4" Height="20" MinWidth="20"
+                                  Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
+                    <TextBlock Text="Enter" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
+                </controls:Outline>
+                <Border Width="16" />
+                <TextBlock x:Name="OpenActionText" VerticalAlignment="Center" Margin="0,0,4,0"
+                           FontFamily="{StaticResource FcTextFont}" FontSize="12"
+                           Foreground="{ThemeResource FcTextBrush}" />
+                <controls:Outline Radius="4" Height="20" MinWidth="20"
+                                  Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
+                    <TextBlock Text="Enter" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
                 </controls:Outline>
             </StackPanel>
         </Grid>

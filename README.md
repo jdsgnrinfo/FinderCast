@@ -18,8 +18,7 @@
 | Abrir o cerrar el lanzador | `Alt` `Espacio` (se cambia en los ajustes) |
 | Moverse por los resultados | `↑` / `↓` |
 | Abrir el resultado elegido | `Enter` o clic |
-| Abrir su ubicación en el Explorador | `Ctrl` `Enter` |
-| Abrir como administrador | `Ctrl` `Mayús` `Enter` |
+| Abrir como administrador | `Ctrl` `Enter` |
 | Cerrar | `Esc`, o hacer clic fuera |
 
 Busca entre los accesos directos del menú Inicio (los del usuario y los de todos los usuarios), las
@@ -27,8 +26,6 @@ apps de Microsoft Store y
 entre sus propios comandos: *Ajustes de FinderCast* y *Salir de FinderCast*. No hace falta escribir
 el nombre entero ni con tildes: `vsc` encuentra *Visual Studio Code* y `configuracion` encuentra
 *Configuración*. Las apps que más abres suben en la lista.
-
-Un doble clic en el logo y el nombre del pie del lanzador abre los ajustes.
 
 La app se queda en segundo plano con un icono en el área de notificación: un clic abre los
 ajustes y el clic derecho muestra *Abrir FinderCast* y *Salir*. Si ocultas el icono, volver a
