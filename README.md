@@ -9,6 +9,10 @@
   Pulsa el atajo, escribe y pulsa Enter.
 </p>
 
+<p align="center">
+  <img src="docs/lanzador.webp" alt="El lanzador de FinderCast con las últimas apps abiertas" width="720">
+</p>
+
 ---
 
 ## Uso

@@ -10,7 +10,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Product>FinderCast</Product>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <Authors>Jotadsgnr</Authors>
     <Copyright>Copyright (c) 2026 Jotadsgnr. Licencia MIT.</Copyright>
   </PropertyGroup>

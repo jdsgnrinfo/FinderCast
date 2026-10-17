@@ -21,7 +21,7 @@ aquí van además las decisiones, lo que se probó y lo que queda pendiente.
 - Versión portable en un único `FinderCast.exe` comprimido.
 - En este ordenador PowerToys Run también usa `Alt` `Espacio`.
 
-## 2026-10-17 · Versiones 0.2.0 y 0.2.1
+## 2026-10-17 · Versiones 0.2.0, 0.2.1 y 0.2.2
 
 **Revisión del proyecto y de GitHub.** Había una sola release (0.1.0), sin issues ni PRs; el commit
 del ejecutable único aún no estaba publicado.
@@ -53,11 +53,12 @@ del ejecutable único aún no estaba publicado.
 - Mica más claro en los ajustes (Mica Alt y un Mica a medida gris azulado): se dejó el Mica
   estándar. El Mica a medida funcionaba extendiendo el contenido bajo la barra de título.
 
-**Después de la 0.2.1 (sin publicar)**
+**0.2.2**
 - Ajuste *Mostrar las 5 últimas apps abiertas* (`ShowRecentApps`, desactivado por defecto). Las
   claves de las últimas apps se guardan en `RecentApps` del `settings.json`, la más reciente
   primero, y se quitan las desinstaladas. Con la búsqueda vacía: activado muestra la tarjeta con
   esas apps (si hay alguna); desactivado, solo la barra. Probado con capturas en los dos estados.
+- Captura del lanzador en el README (`docs/lanzador.webp`).
 
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
