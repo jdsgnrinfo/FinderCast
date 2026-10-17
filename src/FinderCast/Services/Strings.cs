@@ -21,9 +21,11 @@ internal sealed record Strings
     public required string ShowTrayIcon { get; init; }
     public required string Language { get; init; }
     public required string Shortcut { get; init; }
+    public required string AdminShortcut { get; init; }
     public required string PressShortcut { get; init; }
     public required string ShortcutInUse { get; init; }
     public required string ShortcutFailed { get; init; }
+    public required string EndWithEnter { get; init; }
     public required string BuyMeACoffee { get; init; }
 
     // Nombres de teclas que cambian con el idioma.
@@ -53,12 +55,14 @@ internal sealed record Strings
         ShowTrayIcon = "Mostrar icono en la bandeja",
         Language = "Idioma",
         Shortcut = "Atajo para abrir",
+        AdminShortcut = "Abrir como administrador",
         PressShortcut = "Pulsa el atajo…",
         ShortcutInUse = "Ya está en uso",
+        EndWithEnter = "Termina con Enter",
         ShortcutFailed = "No se pudo activar el atajo {0}: lo usa otra app. Elige otro en los ajustes.",
         BuyMeACoffee = "Invítame un café",
         SpaceKey = "Espacio",
-        SearchPlaceholder = "Buscar aplicaciones y comandos…",
+        SearchPlaceholder = "Buscar aplicaciones…",
         Application = "Aplicación",
         Command = "Comando",
         NoResults = "Sin resultados",
@@ -80,12 +84,14 @@ internal sealed record Strings
         ShowTrayIcon = "Show icon in the notification area",
         Language = "Language",
         Shortcut = "Shortcut to open",
+        AdminShortcut = "Run as administrator",
         PressShortcut = "Press the shortcut…",
         ShortcutInUse = "Already in use",
+        EndWithEnter = "End with Enter",
         ShortcutFailed = "Couldn't enable the {0} shortcut: another app uses it. Pick another one in the settings.",
         BuyMeACoffee = "Buy me a coffee",
         SpaceKey = "Space",
-        SearchPlaceholder = "Search apps and commands…",
+        SearchPlaceholder = "Search apps…",
         Application = "Application",
         Command = "Command",
         NoResults = "No results",

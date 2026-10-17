@@ -26,7 +26,7 @@ internal static class Search
         }
 
         return [.. items
-            .Select(item => (item, score: Score(q, item.SearchName)))
+            .Select(item => (item, score: Math.Max(Score(q, item.SearchName), item.AltSearchName is { } alt ? Score(q, alt) : 0)))
             .Where(r => r.score > 0)
             .Select(r => (r.item, score: r.score + Math.Min(launches.GetValueOrDefault(r.item.Key), 20) * 10))
             .OrderByDescending(r => r.score)

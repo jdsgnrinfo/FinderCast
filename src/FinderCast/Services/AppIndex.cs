@@ -23,6 +23,22 @@ internal sealed record LaunchItem(string Name, string Key, LaunchKind Kind)
 
     /// <summary>Nombre preparado para buscar (minúsculas y sin tildes), calculado una vez.</summary>
     public string SearchName { get; } = Search.Normalize(Name);
+
+    /// <summary>
+    /// Nombre del archivo, si Windows muestra otro traducido ("Task Manager" → "Administrador de
+    /// tareas"): se busca por los dos.
+    /// </summary>
+    public string? FileName
+    {
+        get;
+        init
+        {
+            field = value;
+            AltSearchName = value is null ? null : Search.Normalize(value);
+        }
+    }
+
+    public string? AltSearchName { get; private set; }
 }
 
 /// <summary>
@@ -88,6 +104,7 @@ internal sealed class AppIndex : IDisposable
         _scannedAt = DateTime.UtcNow;
         Task.Run(() =>
         {
+            LocalizedNames.Clear();
             _apps = Scan();
             Items = [.. _apps, .. Commands];
         });
@@ -129,11 +146,16 @@ internal sealed class AppIndex : IDisposable
             foreach (var file in files)
             {
                 if (!Extensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase)) continue;
-                var name = Path.GetFileNameWithoutExtension(file);
-                if (Noise.Any(n => name.Contains(n, StringComparison.OrdinalIgnoreCase))) continue;
+                var fileName = Path.GetFileNameWithoutExtension(file);
+                if (Noise.Any(n => fileName.Contains(n, StringComparison.OrdinalIgnoreCase))) continue;
+                var name = LocalizedName(file) ?? fileName;
 
                 // La misma app suele estar en las dos carpetas: gana la del usuario (la primera).
-                byName.TryAdd(name, new LaunchItem(name, file, LaunchKind.Application) { Path = file });
+                byName.TryAdd(name, new LaunchItem(name, file, LaunchKind.Application)
+                {
+                    Path = file,
+                    FileName = name == fileName ? null : fileName,
+                });
             }
         }
         // Apps de Microsoft Store (Calculadora, Fotos…): si ya hay un acceso con el mismo nombre, gana el acceso.
@@ -141,6 +163,52 @@ internal sealed class AppIndex : IDisposable
 
         return [.. byName.Values.OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
+
+    // desktop.ini de cada carpeta ya leído: [LocalizedFileNames], archivo → nombre traducido.
+    private static readonly Dictionary<string, Dictionary<string, string>> LocalizedNames = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// El nombre con que el Explorador muestra un acceso directo de Windows, que viene en el
+    /// desktop.ini de su carpeta como "@%SystemRoot%\system32\Taskmgr.exe,-32420".
+    /// </summary>
+    private static string? LocalizedName(string file)
+    {
+        var folder = Path.GetDirectoryName(file)!;
+        if (!LocalizedNames.TryGetValue(folder, out var names))
+        {
+            names = ReadLocalizedNames(Path.Combine(folder, "desktop.ini"));
+            LocalizedNames[folder] = names;
+        }
+        if (!names.TryGetValue(Path.GetFileName(file), out var resource)) return null;
+
+        var buffer = new System.Text.StringBuilder(512);
+        if (SHLoadIndirectString(Environment.ExpandEnvironmentVariables(resource), buffer, buffer.Capacity, IntPtr.Zero) != 0) return null;
+        var name = buffer.ToString().Trim();
+        return name.Length > 0 ? name : null;
+    }
+
+    private static Dictionary<string, string> ReadLocalizedNames(string iniPath)
+    {
+        var names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            if (!File.Exists(iniPath)) return names;
+            var inSection = false;
+            foreach (var raw in File.ReadLines(iniPath))
+            {
+                var line = raw.Trim();
+                if (line.StartsWith('[')) inSection = line.Equals("[LocalizedFileNames]", StringComparison.OrdinalIgnoreCase);
+                else if (inSection && line.IndexOf('=') is > 0 and var eq) names[line[..eq].Trim()] = line[(eq + 1)..].Trim();
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+        return names;
+    }
+
+    [System.Runtime.InteropServices.DllImport("shlwapi.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern int SHLoadIndirectString(string source, System.Text.StringBuilder output, int capacity, IntPtr reserved);
 
     /// <summary>Apps empaquetadas del usuario, que se abren por su id: shell:AppsFolder\&lt;AUMID&gt;.</summary>
     private static List<LaunchItem> PackagedApps()

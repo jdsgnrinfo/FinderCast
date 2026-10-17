@@ -18,7 +18,7 @@
 | Abrir o cerrar el lanzador | `Alt` `Espacio` (se cambia en los ajustes) |
 | Moverse por los resultados | `↑` / `↓` |
 | Abrir el resultado elegido | `Enter` o clic |
-| Abrir como administrador | `Ctrl` `Enter` |
+| Abrir como administrador | `Ctrl` `Enter` (se cambia en los ajustes) |
 | Cerrar | `Esc`, o hacer clic fuera |
 
 Busca entre los accesos directos del menú Inicio (los del usuario y los de todos los usuarios), las
@@ -36,6 +36,7 @@ abrir FinderCast desde el menú Inicio muestra los ajustes.
 - Abrir al iniciar Windows (activado la primera vez).
 - Mostrar el icono en la bandeja.
 - Idioma: español o inglés (por defecto, el de Windows). Cambia al momento, sin reiniciar.
+- Abrir como administrador: se graba igual, con una o más modificadoras y `Enter`.
 - Atajo para abrir: haz clic en las teclas y pulsa la nueva combinación (`Esc` cancela). Si otra
   app ya lo usa, FinderCast lo avisa y conserva el anterior.
 

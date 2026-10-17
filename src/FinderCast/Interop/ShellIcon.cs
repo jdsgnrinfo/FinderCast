@@ -21,6 +21,32 @@ internal static class ShellIcon
         return FromShell(path, size);
     }
 
+    /// <summary>El programa al que apunta un acceso directo .lnk, o null si no es un archivo.</summary>
+    public static string? LinkTarget(string path)
+    {
+        if (!path.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase)) return null;
+        try
+        {
+            var link = (IShellLinkW)new ShellLink();
+            try
+            {
+                ((IPersistFile)link).Load(path, 0);
+                var buffer = new StringBuilder(1024);
+                link.GetPath(buffer, buffer.Capacity, IntPtr.Zero, 0);
+                var target = Environment.ExpandEnvironmentVariables(buffer.ToString());
+                return target.Length > 0 && File.Exists(target) ? target : null;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(link);
+            }
+        }
+        catch (Exception ex) when (ex is COMException or IOException or UnauthorizedAccessException or InvalidCastException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>Dónde está el icono de un acceso directo: archivo e índice (negativo = id de recurso).</summary>
     private static (string File, int Index)? IconLocation(string path)
     {

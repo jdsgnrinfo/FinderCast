@@ -21,6 +21,9 @@ internal sealed class AppSettings
     /// <summary>Atajo global que abre el lanzador.</summary>
     public HotKey HotKey { get; set; } = HotKey.Default;
 
+    /// <summary>Modificadores que, con Enter, abren el resultado como administrador.</summary>
+    public HotKeyModifiers AdminShortcut { get; set; } = Services.AdminShortcut.Default;
+
     /// <summary>Veces que se ha abierto cada resultado (por su ruta): los más usados suben.</summary>
     public Dictionary<string, int> Launches { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }
@@ -47,6 +50,8 @@ internal sealed class SettingsStore(string filePath)
             using var stream = File.OpenRead(FilePath);
             var settings = JsonSerializer.Deserialize<AppSettings>(stream, JsonOptions) ?? new AppSettings();
             settings.Launches = new Dictionary<string, int>(settings.Launches, StringComparer.OrdinalIgnoreCase);
+            // Sin modificadoras, Enter solo abriría todo como administrador: se vuelve al predeterminado.
+            if (!AdminShortcut.IsValid(new HotKey(settings.AdminShortcut, Interop.Native.VK_RETURN))) settings.AdminShortcut = AdminShortcut.Default;
             return settings;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)

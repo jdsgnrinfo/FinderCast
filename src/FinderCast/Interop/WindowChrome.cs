@@ -108,6 +108,17 @@ internal static class WindowChrome
     /// así que Windows le dibuja su borde original, sus esquinas redondeadas y su sombra. Evita la
     /// línea superior que WinUI pinta al extender el contenido sobre la barra.
     /// </summary>
+    /// <summary>
+    /// Borde de la ventana con un color fijo, activa o no: las dos tarjetas del lanzador se ven
+    /// iguales aunque solo una tenga el foco.
+    /// </summary>
+    public static void UseFixedBorder(IntPtr hwnd, bool dark)
+    {
+        const int DwmwaBorderColor = 34;
+        var color = dark ? 0x00484848 : 0x00D6D6D6; // COLORREF: 0x00BBGGRR.
+        DwmSetWindowAttribute(hwnd, DwmwaBorderColor, ref color, sizeof(int));
+    }
+
     public static void UseNativeBorderWithoutTitleBar(Window window)
     {
         const uint WmNcCalcSize = 0x0083;

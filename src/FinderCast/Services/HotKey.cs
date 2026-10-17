@@ -47,6 +47,7 @@ internal readonly record struct HotKey(HotKeyModifiers Modifiers, uint Key)
         switch (vk)
         {
             case Native.VK_SPACE: return Strings.Current.SpaceKey;
+            case Native.VK_RETURN: return "Enter";
             case >= 0x30 and <= 0x39: // 0-9
             case >= 0x41 and <= 0x5A: // A-Z
                 return ((char)vk).ToString();

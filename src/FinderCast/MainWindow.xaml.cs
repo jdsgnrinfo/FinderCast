@@ -17,20 +17,27 @@ using WinRT.Interop;
 namespace FinderCast;
 
 /// <summary>
-/// El lanzador: ventana flotante sin bordes sobre Acrylic que aparece con el atajo global en la
-/// pantalla del puntero, busca mientras se escribe y se oculta al abrir algo, con Esc o al
-/// perder el foco. Se maneja entera con el teclado (flechas, Enter, Esc).
+/// El lanzador: dos tarjetas flotantes sobre Acrylic, la de búsqueda (esta ventana) y la de
+/// resultados (<see cref="ResultsWindow"/>), que aparecen con el atajo global en la pantalla del
+/// puntero, buscan mientras se escribe y se ocultan al abrir algo, con Esc o al perder el foco.
+/// Se maneja entera con el teclado (flechas, Enter, Esc).
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    private const double WidthDip = 640;
-    private const double HeightDip = 420;
+    private const double WidthDip = 600;
+    private const double SearchHeightDip = 56;
+    private const double GapDip = 12;
+    // Justo cinco filas, sin cortar la sexta: 5 × (48 de fila + 2 de margen) + 16 de relleno de
+    // la lista + 1 de la línea + 52 del pie. Si cambian esas medidas en ResultsWindow.xaml, aquí también.
+    private const double ResultsHeightDip = 5 * (48 + 2) + 16 + 1 + 52;
 
     private readonly AppIndex _index;
     private readonly AppSettings _settings;
     private readonly SettingsStore _store;
     private readonly ObservableCollection<ResultItem> _results = [];
     private readonly IntPtr _hwnd;
+    private readonly ResultsWindow _panel;
+    private RectInt32 _panelBounds;
     private bool _allowClose;
 
     internal MainWindow(AppIndex index, AppSettings settings, SettingsStore store)
@@ -54,15 +61,30 @@ public sealed partial class MainWindow : Window
             presenter.IsAlwaysOnTop = true;
             presenter.SetBorderAndTitleBar(hasBorder: true, hasTitleBar: false);
         }
-        // No se expande nunca, tampoco con doble clic en el pie.
+        // No se expande nunca.
         WindowChrome.PreventMaximize(this);
 
-        SystemBackdrop = new DesktopAcrylicBackdrop();
+        SystemBackdrop = new Controls.ActiveAcrylic();
         // Sin barra de título, con el borde, las esquinas y la sombra originales de Windows 11. No
         // se usa ExtendsContentIntoTitleBar: WinUI deja entonces una línea oscura en el borde superior.
         WindowChrome.UseNativeBorderWithoutTitleBar(this);
-        // El pie arrastra la ventana.
-        Footer.SizeChanged += (_, _) => UpdateRegions();
+
+        // El mismo borde en las dos tarjetas, tenga el foco la que lo tenga.
+        if (Content is FrameworkElement content)
+        {
+            WindowChrome.UseFixedBorder(_hwnd, content.ActualTheme == ElementTheme.Dark);
+            content.ActualThemeChanged += (_, _) => WindowChrome.UseFixedBorder(_hwnd, content.ActualTheme == ElementTheme.Dark);
+        }
+
+        _panel = new ResultsWindow(_hwnd);
+        ApplyAdminShortcut();
+        Results.ItemsSource = _results;
+        Results.ItemClick += OnResultClick;
+        Results.SelectionChanged += (_, e) =>
+        {
+            foreach (var item in e.RemovedItems.OfType<ResultItem>()) item.IsSelected = false;
+            foreach (var item in e.AddedItems.OfType<ResultItem>()) item.IsSelected = true;
+        };
 
         AppWindow.Closing += (_, args) =>
         {
@@ -72,12 +94,26 @@ public sealed partial class MainWindow : Window
         };
         Activated += (_, args) =>
         {
-            if (args.WindowActivationState == WindowActivationState.Deactivated) HideLauncher();
+            // Un clic en los resultados no cuenta como salir: se mira qué ventana queda delante.
+            if (args.WindowActivationState != WindowActivationState.Deactivated) return;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                var foreground = Native.GetForegroundWindow();
+                if (foreground == _panel.Hwnd)
+                {
+                    Native.SetForegroundWindow(_hwnd);
+                    return;
+                }
+                if (foreground != _hwnd) HideLauncher();
+            });
         };
 
         ApplyStrings();
         Strings.Changed += ApplyStrings;
     }
+
+    /// <summary>El engranaje de la búsqueda: abrir los ajustes.</summary>
+    public event Action? SettingsRequested;
 
     public bool IsShown => AppWindow.IsVisible;
 
@@ -95,11 +131,14 @@ public sealed partial class MainWindow : Window
         var area = DisplayArea.GetFromPoint(new PointInt32(cursor.X, cursor.Y), DisplayAreaFallback.Nearest).WorkArea;
         var scale = Native.ScaleAt(cursor);
         var width = (int)Math.Round(WidthDip * scale);
-        var height = (int)Math.Round(HeightDip * scale);
-        AppWindow.MoveAndResize(new RectInt32(
-            area.X + (area.Width - width) / 2,
-            area.Y + (int)((area.Height - height) * 0.3),
-            width, height));
+        var searchHeight = (int)Math.Round(SearchHeightDip * scale);
+        var gap = (int)Math.Round(GapDip * scale);
+        var resultsHeight = (int)Math.Round(ResultsHeightDip * scale);
+        var x = area.X + (area.Width - width) / 2;
+        var y = area.Y + (int)((area.Height - searchHeight - gap - resultsHeight) * 0.3);
+        AppWindow.MoveAndResize(new RectInt32(x, y, width, searchHeight));
+        // Los resultados aparecen debajo en cuanto se escribe algo (UpdateResults).
+        _panelBounds = new RectInt32(x, y + searchHeight + gap, width, resultsHeight);
 
         _index.RefreshIfStale();
         SearchBox.Text = "";
@@ -107,30 +146,36 @@ public sealed partial class MainWindow : Window
 
         Activate();
         Native.SetForegroundWindow(_hwnd);
-        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, UpdateRegions);
         SearchBox.Focus(FocusState.Programmatic);
     }
 
     public void HideLauncher()
     {
+        _panel.Hide();
         if (IsShown) AppWindow.Hide();
     }
 
     public void CloseForExit()
     {
         _allowClose = true;
+        _panel.CloseForExit();
         Close();
     }
 
-    private void UpdateRegions() => WindowChrome.SetRegions(this, Footer);
+    private ListView Results => _panel.List;
+
+    private TextBlock EmptyText => _panel.Empty;
 
     private void ApplyStrings()
     {
         var text = Strings.Current;
         SearchBox.PlaceholderText = text.SearchPlaceholder;
-        EmptyText.Text = text.NoResults;
-        OpenActionText.Text = text.OpenAction;
-        AdminActionText.Text = text.RunAsAdminAction;
+    }
+
+    private void OnSettingsClick(object sender, RoutedEventArgs e)
+    {
+        HideLauncher();
+        SettingsRequested?.Invoke();
     }
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e) => UpdateResults();
@@ -144,6 +189,10 @@ public sealed partial class MainWindow : Window
         Results.SelectedIndex = _results.Count > 0 ? 0 : -1;
         if (_results.Count > 0) Results.ScrollIntoView(_results[0]);
         EmptyText.Visibility = _results.Count == 0 && SearchBox.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        // Sin nada escrito, solo la barra de búsqueda.
+        if (SearchBox.Text.Trim().Length == 0) _panel.Hide();
+        else _panel.ShowAt(_panelBounds);
 
         foreach (var result in _results) _ = result.LoadIconAsync();
     }
@@ -160,7 +209,8 @@ public sealed partial class MainWindow : Window
                 MoveSelection(-1);
                 break;
             case VirtualKey.Enter:
-                if (Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
+                // Sin texto la lista está oculta: Enter no abre nada que no se vea.
+                if (SearchBox.Text.Trim().Length > 0 && Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
                 break;
             case VirtualKey.Escape:
                 HideLauncher();
@@ -191,10 +241,11 @@ public sealed partial class MainWindow : Window
         if (e.ClickedItem is ResultItem result) Launch(result.Item);
     }
 
-    /// <summary>Ctrl+Enter abre la app como administrador.</summary>
-    private static LaunchMode LaunchModeFromKeys()
-        => Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control)
-            .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down) ? LaunchMode.RunAsAdmin : LaunchMode.Open;
+    /// <summary>Con el atajo de los ajustes (Ctrl+Enter por defecto), como administrador.</summary>
+    private LaunchMode LaunchModeFromKeys() => AdminShortcut.IsHeld(_settings.AdminShortcut) ? LaunchMode.RunAsAdmin : LaunchMode.Open;
+
+    /// <summary>Pone en el pie las teclas del atajo de administrador elegido en los ajustes.</summary>
+    public void ApplyAdminShortcut() => _panel.ShowAdminShortcut(_settings.AdminShortcut);
 
     private void Launch(LaunchItem item, LaunchMode mode = LaunchMode.Open)
     {
@@ -253,6 +304,57 @@ public sealed partial class ResultItem : INotifyPropertyChanged
     public string Name => Item.Name;
 
     public string KindLabel => Item.KindLabel;
+
+    /// <summary>Versión del programa, solo en el resultado elegido ("v1.0.0").</summary>
+    public string Detail
+    {
+        get;
+        private set
+        {
+            field = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Detail)));
+        }
+    } = "";
+
+    internal bool IsSelected
+    {
+        get;
+        set
+        {
+            field = value;
+            if (!value) Detail = "";
+            else _ = LoadVersionAsync();
+        }
+    }
+
+    private static readonly Dictionary<string, string> VersionCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private async Task LoadVersionAsync()
+    {
+        if (Item.Kind != LaunchKind.Application || Item.Path is not { } path) return;
+        if (!VersionCache.TryGetValue(path, out var version))
+        {
+            version = await Task.Run(() => ReadVersion(path));
+            VersionCache[path] = version;
+        }
+        if (IsSelected) Detail = version;
+    }
+
+    /// <summary>"v" y los tres primeros números de la versión del programa, o vacío si no tiene.</summary>
+    private static string ReadVersion(string path)
+    {
+        try
+        {
+            if (ShellIcon.LinkTarget(path) is not { } target) return "";
+            var info = FileVersionInfo.GetVersionInfo(target);
+            if (info.FileMajorPart == 0 && info.FileMinorPart == 0 && info.FileBuildPart == 0) return "";
+            return $"v{info.FileMajorPart}.{info.FileMinorPart}.{info.FileBuildPart}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return "";
+        }
+    }
 
     public ImageSource? Icon
     {

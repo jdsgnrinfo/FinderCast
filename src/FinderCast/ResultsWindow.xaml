@@ -1,0 +1,87 @@
+<Window
+    x:Class="FinderCast.ResultsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FinderCast"
+    xmlns:controls="using:FinderCast.Controls"
+    Title="FinderCast">
+
+    <!--
+        Tarjeta de resultados, bajo la de búsqueda: lista y un pie con los atajos. Nunca recibe
+        el foco: el teclado sigue en la búsqueda y el ratón elige y abre.
+    -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="1" />
+            <RowDefinition Height="52" />
+        </Grid.RowDefinitions>
+
+        <ListView x:Name="Results"
+                  Padding="0,8"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  AllowFocusOnInteraction="False"
+                  IsTabStop="False">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                    <Setter Property="Margin" Value="8,1" />
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="Padding" Value="12,0,16,0" />
+                    <Setter Property="CornerRadius" Value="8" />
+                    <Setter Property="AllowFocusOnInteraction" Value="False" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ResultItem">
+                    <Grid Height="48" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="{x:Bind Icon, Mode=OneWay}" Width="26" Height="26" />
+                        <TextBlock Grid.Column="1" Text="{x:Bind Name}"
+                                   FontFamily="{StaticResource FcTextFont}" FontSize="14"
+                                   Foreground="{ThemeResource FcTextBrush}"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="2" Text="{x:Bind KindLabel}"
+                                   FontFamily="{StaticResource FcTextFont}" FontSize="12"
+                                   Foreground="{ThemeResource FcSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="3" Text="{x:Bind Detail, Mode=OneWay}"
+                                   FontFamily="{StaticResource FcTextFont}" FontSize="13"
+                                   Foreground="{ThemeResource FcSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock x:Name="EmptyText"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontFamily="{StaticResource FcTextFont}" FontSize="{StaticResource FcBodySize}"
+                   Foreground="{ThemeResource FcSecondaryBrush}"
+                   Visibility="Collapsed" />
+
+        <Rectangle Grid.Row="1" Fill="{ThemeResource FcDividerBrush}" />
+
+        <!-- Pie: los atajos de la acción elegida. -->
+        <StackPanel Grid.Row="2" Padding="20,0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <TextBlock x:Name="AdminActionText" VerticalAlignment="Center" Margin="0,0,6,0"
+                       FontFamily="{StaticResource FcTextFont}" FontSize="12"
+                       Foreground="{ThemeResource FcTextBrush}" />
+            <!-- Las teclas cambian con el ajuste: se ponen desde el código. -->
+            <StackPanel x:Name="AdminKeys" Orientation="Horizontal" Spacing="4" />
+            <Border Width="20" />
+            <TextBlock x:Name="OpenActionText" VerticalAlignment="Center" Margin="0,0,6,0"
+                       FontFamily="{StaticResource FcTextFont}" FontSize="12"
+                       Foreground="{ThemeResource FcTextBrush}" />
+            <controls:Outline Radius="6" Height="28" MinWidth="28"
+                              Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
+                <TextBlock Text="Enter" Margin="8,0" Style="{StaticResource FcKeyCapTextStyle}" />
+            </controls:Outline>
+        </StackPanel>
+    </Grid>
+</Window>

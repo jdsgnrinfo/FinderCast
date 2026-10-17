@@ -25,7 +25,9 @@
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
-            <RowDefinition Height="48" />
+            <!-- Los dos atajos son un grupo: filas más bajas, más juntas. -->
+            <RowDefinition Height="42" />
+            <RowDefinition Height="42" />
             <RowDefinition Height="16" />
         </Grid.RowDefinitions>
 
@@ -81,14 +83,24 @@
             </Grid>
         </Border>
 
-        <!-- Fila: atajo global (la última, sin línea debajo). Clic para grabar uno nuevo. -->
-        <Grid Grid.Row="10" Margin="24,0">
+        <!-- Fila: atajo global. Clic para grabar uno nuevo. Sin línea: forma grupo con la siguiente. -->
+        <Grid Grid.Row="10" Margin="24,3,24,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="ShortcutLabel" Style="{StaticResource FcRowLabelStyle}" />
             <controls:ShortcutPicker x:Name="ShortcutPicker" Grid.Column="1" />
+        </Grid>
+
+        <!-- Fila: atajo para abrir como administrador (la última, sin línea debajo). Se graba igual. -->
+        <Grid Grid.Row="11" Margin="24,0,24,3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="AdminLabel" Style="{StaticResource FcRowLabelStyle}" />
+            <controls:ShortcutPicker x:Name="AdminPicker" Grid.Column="1" />
         </Grid>
     </Grid>
 </Window>

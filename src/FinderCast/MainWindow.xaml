@@ -7,29 +7,22 @@
     Title="FinderCast">
 
     <!--
-        Paleta del lanzador sobre Acrylic: búsqueda arriba, resultados en el centro y un pie con
-        la acción de Enter. El pie es también la zona para arrastrar la ventana.
+        Tarjeta de búsqueda del lanzador, sobre Acrylic. Los resultados van en su propia tarjeta
+        (ResultsWindow), justo debajo.
     -->
     <Grid x:Name="Root" KeyDown="OnRootKeyDown">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
-            <RowDefinition Height="1" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="1" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-
         <!-- Búsqueda -->
-        <Grid Padding="20,0,12,0" ColumnSpacing="10">
+        <Grid x:Name="SearchBar" Padding="20,0,14,0" ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <FontIcon Glyph="&#xE721;" FontSize="18" Foreground="{ThemeResource FcSecondaryBrush}" VerticalAlignment="Center" />
             <TextBox x:Name="SearchBox" Grid.Column="1"
                      VerticalAlignment="Center"
-                     FontFamily="{StaticResource FcTextFont}" FontSize="18"
-                     Padding="0,4,0,5"
+                     FontFamily="{StaticResource FcTextFont}" FontSize="15"
+                     Padding="0,6,0,3"
                      BorderThickness="0"
                      IsSpellCheckEnabled="False"
                      PreviewKeyDown="OnSearchKeyDown"
@@ -46,70 +39,21 @@
                     <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
                 </TextBox.Resources>
             </TextBox>
+            <!-- Engranaje: abre los ajustes. Sin foco de teclado, para no sacarlo de la búsqueda. -->
+            <Button x:Name="SettingsButton" Grid.Column="2"
+                    Width="34" Height="34" Padding="0" CornerRadius="6"
+                    VerticalAlignment="Center" IsTabStop="False"
+                    BorderThickness="0" Background="Transparent"
+                    Click="OnSettingsClick">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#14FFFFFF" />
+                    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#0AFFFFFF" />
+                    <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="Transparent" />
+                    <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="Transparent" />
+                </Button.Resources>
+                <FontIcon Glyph="&#xE713;" FontSize="18" Foreground="{ThemeResource FcSecondaryBrush}" />
+            </Button>
         </Grid>
 
-        <Rectangle Grid.Row="1" Fill="{ThemeResource FcDividerBrush}" />
-
-        <!-- Resultados -->
-        <ListView x:Name="Results" Grid.Row="2"
-                  Padding="0,6"
-                  SelectionMode="Single"
-                  IsItemClickEnabled="True"
-                  ItemClick="OnResultClick"
-                  ItemsSource="{x:Bind _results}">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:ResultItem">
-                    <Grid Height="44" ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Image Source="{x:Bind Icon, Mode=OneWay}" Width="28" Height="28" />
-                        <TextBlock Grid.Column="1" Text="{x:Bind Name}"
-                                   FontFamily="{StaticResource FcTextFont}" FontSize="14"
-                                   Foreground="{ThemeResource FcTextBrush}"
-                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="2" Text="{x:Bind KindLabel}"
-                                   FontFamily="{StaticResource FcTextFont}" FontSize="12"
-                                   Foreground="{ThemeResource FcSecondaryBrush}"
-                                   VerticalAlignment="Center" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-        <TextBlock x:Name="EmptyText" Grid.Row="2"
-                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                   FontFamily="{StaticResource FcTextFont}" FontSize="{StaticResource FcBodySize}"
-                   Foreground="{ThemeResource FcSecondaryBrush}"
-                   Visibility="Collapsed" />
-
-        <Rectangle Grid.Row="3" Fill="{ThemeResource FcDividerBrush}" />
-
-        <!-- Pie: atajos de la acción elegida, a la derecha. Arrastra la ventana. -->
-        <Grid x:Name="Footer" Grid.Row="4" Padding="16,0" Background="Transparent">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <TextBlock x:Name="AdminActionText" VerticalAlignment="Center" Margin="0,0,4,0"
-                           FontFamily="{StaticResource FcTextFont}" FontSize="12"
-                           Foreground="{ThemeResource FcTextBrush}" />
-                <controls:Outline Radius="4" Height="20" MinWidth="20"
-                                  Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
-                    <TextBlock Text="Ctrl" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
-                </controls:Outline>
-                <controls:Outline Radius="4" Height="20" MinWidth="20"
-                                  Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
-                    <TextBlock Text="Enter" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
-                </controls:Outline>
-                <Border Width="16" />
-                <TextBlock x:Name="OpenActionText" VerticalAlignment="Center" Margin="0,0,4,0"
-                           FontFamily="{StaticResource FcTextFont}" FontSize="12"
-                           Foreground="{ThemeResource FcTextBrush}" />
-                <controls:Outline Radius="4" Height="20" MinWidth="20"
-                                  Fill="{ThemeResource FcKeyFillBrush}" Stroke="{ThemeResource FcKeyBorderBrush}">
-                    <TextBlock Text="Enter" Margin="6,0" Style="{StaticResource FcKeyCapTextStyle}" />
-                </controls:Outline>
-            </StackPanel>
-        </Grid>
     </Grid>
 </Window>

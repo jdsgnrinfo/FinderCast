@@ -8,6 +8,7 @@ internal static class Native
 {
     // Teclas.
     public const uint VK_SPACE = 0x20;
+    public const uint VK_RETURN = 0x0D;
     public const uint VK_ESCAPE = 0x1B;
     public const uint VK_SHIFT = 0x10, VK_CONTROL = 0x11, VK_MENU = 0x12;
     public const uint VK_LSHIFT = 0xA0, VK_RSHIFT = 0xA1, VK_LCONTROL = 0xA2, VK_RCONTROL = 0xA3, VK_LMENU = 0xA4, VK_RMENU = 0xA5;
@@ -197,6 +198,18 @@ internal static class Native
 
 
     /// <summary>Escala (1 = 96 ppp) del monitor que contiene el punto.</summary>
+    public const int GWL_EXSTYLE = -20, GWLP_HWNDPARENT = -8;
+    public const long WS_EX_NOACTIVATE = 0x08000000;
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+    public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+
     public static double ScaleAt(POINT point)
     {
         var monitor = MonitorFromPoint(point, MONITOR_DEFAULTTONEAREST);

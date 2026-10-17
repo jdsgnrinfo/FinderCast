@@ -5,7 +5,21 @@ y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Añadido
+
+- Engranaje en la barra de búsqueda para abrir los ajustes.
+- Ajuste para grabar el atajo de *Abrir como administrador*, como el atajo para abrir: una o más
+  modificadoras (`Ctrl`, `Alt`, `Shift`) con `Enter`. El pie del lanzador muestra el elegido.
+- Versión del programa junto al resultado elegido.
+
+### Corregido
+
+- Las apps de Windows salen con su nombre traducido (*Administrador de tareas*, no *Task Manager*)
+  y se encuentran por los dos nombres.
+
 ### Cambiado
+
+- El lanzador son dos tarjetas: la búsqueda arriba y los resultados debajo, con filas más compactas.
 
 - `Ctrl` `Enter` abre la app como administrador (ya no abre su ubicación).
 - El pie del lanzador muestra los atajos *Abrir como administrador* y *Abrir*, sin el logo ni el

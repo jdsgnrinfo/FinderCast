@@ -29,7 +29,7 @@ public sealed partial class SettingsWindow : Window
 {
     private const double WidthDip = 360;
     private const double RowsTop = 170; // Bajo la barra de título.
-    private const double HeightDip = RowsTop + 48 * 4 + 16;
+    private const double HeightDip = RowsTop + 48 * 3 + 42 * 2 + 16;
 
     /// <summary>Página de donación (la misma que en ShutterGrid y SwiftLook).</summary>
     private const string DonationLink = "https://www.paypal.com/paypalme/jotica96";
@@ -44,6 +44,7 @@ public sealed partial class SettingsWindow : Window
     private readonly Func<HotKey, bool> _changeHotKey;
     private readonly HotKeyRecorder _recorder = new();
     private readonly DropdownMenu _languageMenu = new();
+    private readonly HotKeyRecorder _adminRecorder = new();
     private readonly TooltipPopup _tooltip = new();
     private readonly DispatcherQueueTimer _tooltipTimer;
     private readonly DispatcherQueueTimer _errorTimer;
@@ -52,6 +53,9 @@ public sealed partial class SettingsWindow : Window
 
     /// <summary>Se lanza cuando cambia el ajuste del icono de la bandeja.</summary>
     internal event Action? TrayIconSettingChanged;
+
+    /// <summary>Se lanza cuando cambia el atajo para abrir como administrador.</summary>
+    internal event Action? AdminShortcutChanged;
 
     internal SettingsWindow(AppSettings settings, SettingsStore store, Func<HotKey, bool> changeHotKey)
     {
@@ -130,7 +134,15 @@ public sealed partial class SettingsWindow : Window
         _errorTimer = DispatcherQueue.CreateTimer();
         _errorTimer.Interval = ErrorDuration;
         _errorTimer.IsRepeating = false;
-        _errorTimer.Tick += (_, _) => ShowShortcut();
+        _errorTimer.Tick += (_, _) =>
+        {
+            ShowShortcut();
+            ShowAdminShortcut();
+        };
+
+        AdminPicker.Click += StartAdminRecording;
+        _adminRecorder.Recorded += hotKey => DispatcherQueue.TryEnqueue(() => FinishAdminRecording(hotKey));
+        _adminRecorder.Cancelled += () => DispatcherQueue.TryEnqueue(ShowAdminShortcut);
 
         Activated += (_, args) =>
         {
@@ -146,6 +158,7 @@ public sealed partial class SettingsWindow : Window
                 _recorder.Stop();
                 ShowShortcut();
             }
+            StopAdminRecording();
         };
 
         ApplyStrings();
@@ -192,6 +205,7 @@ public sealed partial class SettingsWindow : Window
     {
         _allowClose = true;
         _recorder.Dispose();
+        _adminRecorder.Dispose();
         HideTooltip();
         _languageMenu.Dismiss(animate: false);
         Close();
@@ -200,6 +214,7 @@ public sealed partial class SettingsWindow : Window
     private void HideSettings()
     {
         _recorder.Stop();
+        _adminRecorder.Stop();
         HideTooltip();
         _languageMenu.Dismiss(animate: false);
         AppWindow.Hide();
@@ -220,12 +235,12 @@ public sealed partial class SettingsWindow : Window
             return;
         }
 
-        if (e.Key != VirtualKey.Escape || _recorder.IsRecording) return;
+        if (e.Key != VirtualKey.Escape || _recorder.IsRecording || _adminRecorder.IsRecording) return;
         HideSettings();
         e.Handled = true;
     }
 
-    // Un clic en cualquier otro sitio de la ventana cierra el menú de idioma.
+    // Un clic en cualquier otro sitio de la ventana cierra los menús.
     private void OnRootPointerPressed(object sender, PointerRoutedEventArgs e)
     {
         if (!LanguageButton.IsHovered) _languageMenu.Dismiss();
@@ -274,6 +289,7 @@ public sealed partial class SettingsWindow : Window
     private void StartRecording()
     {
         if (_recorder.IsRecording) return;
+        StopAdminRecording();
         _errorTimer.Stop();
         _languageMenu.Dismiss();
         ShortcutPicker.ShowPrompt(Strings.Current.PressShortcut);
@@ -292,6 +308,46 @@ public sealed partial class SettingsWindow : Window
         ShortcutPicker.ShowPrompt(Strings.Current.ShortcutInUse);
         _errorTimer.Start();
     }
+
+    private void StartAdminRecording()
+    {
+        if (_adminRecorder.IsRecording) return;
+        if (_recorder.IsRecording)
+        {
+            _recorder.Stop();
+            ShowShortcut();
+        }
+        _errorTimer.Stop();
+        _languageMenu.Dismiss();
+        AdminPicker.ShowPrompt(Strings.Current.PressShortcut);
+        _adminRecorder.Start();
+    }
+
+    private void StopAdminRecording()
+    {
+        if (!_adminRecorder.IsRecording) return;
+        _adminRecorder.Stop();
+        ShowAdminShortcut();
+    }
+
+    private void FinishAdminRecording(HotKey hotKey)
+    {
+        if (AdminShortcut.IsValid(hotKey))
+        {
+            _settings.AdminShortcut = hotKey.Modifiers;
+            _store.Save(_settings);
+            ShowAdminShortcut();
+            AdminShortcutChanged?.Invoke();
+            return;
+        }
+
+        // Tiene que ser modificadoras más Enter: se avisa un momento y vuelve el que había.
+        AdminPicker.ShowPrompt(Strings.Current.EndWithEnter);
+        _errorTimer.Start();
+    }
+
+    /// <summary>Dibuja el atajo de administrador como teclas sueltas: [Ctrl] [Enter].</summary>
+    private void ShowAdminShortcut() => AdminPicker.ShowKeys(AdminShortcut.Keys(_settings.AdminShortcut));
 
     /// <summary>Dibuja el atajo actual como teclas sueltas: [Alt] [Espacio].</summary>
     private void ShowShortcut()
@@ -322,6 +378,8 @@ public sealed partial class SettingsWindow : Window
         LanguageLabel.Text = text.Language;
         LanguageButton.Text = text.Name;
         ShortcutLabel.Text = text.Shortcut;
+        AdminLabel.Text = text.AdminShortcut;
+        if (!_adminRecorder.IsRecording) ShowAdminShortcut();
         if (!_recorder.IsRecording) ShowShortcut(); // "Espacio" / "Space" cambia con el idioma.
     }
 
