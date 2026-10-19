@@ -87,7 +87,43 @@ public sealed partial class ResultsWindow : Window
         }
     }
 
-    internal ListView List => Results;
+    /// <summary>
+    /// Con emojis el pie solo muestra «Copiar [Enter]»: no hay nada que abrir como administrador.
+    /// </summary>
+    internal void ShowCopyAction(bool copy)
+    {
+        var admin = copy ? Visibility.Collapsed : Visibility.Visible;
+        AdminActionText.Visibility = admin;
+        AdminKeys.Visibility = admin;
+        FooterGap.Visibility = admin;
+        SelectedNameText.Visibility = copy ? Visibility.Visible : Visibility.Collapsed;
+        OpenActionText.Text = copy ? Strings.Current.CopyAction : Strings.Current.OpenAction;
+    }
+
+    /// <summary>Nombre del emoji elegido, en el pie.</summary>
+    internal void ShowSelectedName(string name) => SelectedNameText.Text = name;
+
+    /// <summary>La lista de apps o la cuadrícula de emojis: la que se ve recibe los resultados.</summary>
+    internal void UseGrid(bool grid, object items)
+    {
+        if (grid == IsGrid && (grid ? EmojiGrid : (ListViewBase)Results).ItemsSource == items) return;
+        IsGrid = grid;
+        Results.ItemsSource = grid ? null : items;
+        EmojiGrid.ItemsSource = grid ? items : null;
+        Results.Visibility = grid ? Visibility.Collapsed : Visibility.Visible;
+        EmojiGrid.Visibility = grid ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    internal bool IsGrid { get; private set; }
+
+    /// <summary>Casillas por fila de la cuadrícula, para mover la selección con ↑ y ↓.</summary>
+    internal int GridColumns => Math.Max(1, (int)((EmojiGrid.ActualWidth - EmojiGrid.Padding.Left - EmojiGrid.Padding.Right) / 64));
+
+    internal ListViewBase ActiveList => IsGrid ? EmojiGrid : Results;
+
+    internal ListViewBase List => Results;
+
+    internal ListViewBase Grid => EmojiGrid;
 
     internal TextBlock Empty => EmptyText;
 

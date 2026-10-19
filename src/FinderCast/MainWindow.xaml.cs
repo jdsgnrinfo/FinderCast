@@ -78,13 +78,18 @@ public sealed partial class MainWindow : Window
 
         _panel = new ResultsWindow(_hwnd);
         ApplyAdminShortcut();
-        Results.ItemsSource = _results;
-        Results.ItemClick += OnResultClick;
-        Results.SelectionChanged += (_, e) =>
+        _panel.UseGrid(false, _results);
+        // La lista de apps y la cuadrícula de emojis se manejan igual; solo se ve una.
+        foreach (var list in new[] { _panel.List, _panel.Grid })
         {
-            foreach (var item in e.RemovedItems.OfType<ResultItem>()) item.IsSelected = false;
-            foreach (var item in e.AddedItems.OfType<ResultItem>()) item.IsSelected = true;
-        };
+            list.ItemClick += OnResultClick;
+            list.SelectionChanged += (_, e) =>
+            {
+                foreach (var item in e.RemovedItems.OfType<ResultItem>()) item.IsSelected = false;
+                foreach (var item in e.AddedItems.OfType<ResultItem>()) item.IsSelected = true;
+                if (_panel.IsGrid) _panel.ShowSelectedName(Results.SelectedItem is ResultItem selected ? selected.Name : "");
+            };
+        }
 
         AppWindow.Closing += (_, args) =>
         {
@@ -172,7 +177,7 @@ public sealed partial class MainWindow : Window
         return [.. _settings.RecentApps.Select(k => byKey.GetValueOrDefault(k)).OfType<LaunchItem>().Take(RecentCount)];
     }
 
-    private ListView Results => _panel.List;
+    private ListViewBase Results => _panel.ActiveList;
 
     private TextBlock EmptyText => _panel.Empty;
 
@@ -193,13 +198,23 @@ public sealed partial class MainWindow : Window
     private void UpdateResults()
     {
         var empty = SearchBox.Text.Trim().Length == 0;
+        // "> comando": un único resultado que lo ejecuta en la consola.
+        var command = ConsoleCommand.Parse(SearchBox.Text);
+        // ":nombre": emojis y símbolos para copiar.
+        var emoji = command is null ? EmojiCatalog.Parse(SearchBox.Text) : null;
         // Con la búsqueda vacía, las últimas apps abiertas (si está activado en los ajustes).
-        var ranked = empty ? RecentItems() : Search.Rank(SearchBox.Text, _index.Items, _settings.Launches);
+        IReadOnlyList<LaunchItem> ranked = command is not null
+            ? command.Length > 0 ? [ConsoleCommand.Item(command)] : []
+            : emoji is not null ? EmojiCatalog.Find(emoji)
+            : empty ? RecentItems() : Search.Rank(SearchBox.Text, _index.Items, _settings.Launches);
+        _panel.ShowCopyAction(emoji is not null);
+        _panel.UseGrid(emoji is not null, _results);
         _results.Clear();
         foreach (var item in ranked) _results.Add(new ResultItem(item));
 
         Results.SelectedIndex = _results.Count > 0 ? 0 : -1;
         if (_results.Count > 0) Results.ScrollIntoView(_results[0]);
+        EmptyText.Text = command is not null ? Strings.Current.ConsoleHint : Strings.Current.NoResults;
         EmptyText.Visibility = _results.Count == 0 && SearchBox.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         // Sin nada escrito, solo la barra de búsqueda (o las recientes, si hay y están activadas).
@@ -214,10 +229,17 @@ public sealed partial class MainWindow : Window
     {
         switch (e.Key)
         {
+            // En la cuadrícula de emojis, ↑ ↓ saltan una fila y ← → una casilla.
             case VirtualKey.Down:
-                MoveSelection(+1);
+                MoveSelection(_panel.IsGrid ? _panel.GridColumns : +1);
                 break;
             case VirtualKey.Up:
+                MoveSelection(_panel.IsGrid ? -_panel.GridColumns : -1);
+                break;
+            case VirtualKey.Right when _panel.IsGrid && _results.Count > 0:
+                MoveSelection(+1);
+                break;
+            case VirtualKey.Left when _panel.IsGrid && _results.Count > 0:
                 MoveSelection(-1);
                 break;
             case VirtualKey.Enter:
@@ -284,6 +306,18 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (item.Kind == LaunchKind.Emoji)
+        {
+            EmojiCatalog.Copy(item.Glyph!);
+            return;
+        }
+
+        if (item.Kind == LaunchKind.Console)
+        {
+            ConsoleCommand.Run(item.Name, mode == LaunchMode.RunAsAdmin);
+            return;
+        }
+
         try
         {
             var start = new ProcessStartInfo(item.Path!) { UseShellExecute = true };
@@ -320,6 +354,8 @@ public sealed partial class ResultItem : INotifyPropertyChanged
     public string Name => Item.Name;
 
     public string KindLabel => Item.KindLabel;
+
+    public string Glyph => Item.Glyph ?? "";
 
     /// <summary>Versión del programa, solo en el resultado elegido ("v1.0.0").</summary>
     public string Detail
@@ -384,13 +420,17 @@ public sealed partial class ResultItem : INotifyPropertyChanged
 
     internal async Task LoadIconAsync()
     {
+        if (Item.Kind == LaunchKind.Emoji) return; // Se dibuja el carácter.
+
         if (Item.Kind == LaunchKind.Command)
         {
             Icon = _appLogo ??= new BitmapImage(new Uri(App.LogoPath));
             return;
         }
 
-        if (IconCache.TryGetValue(Item.Key, out var cached))
+        // Todos los comandos de consola comparten el icono de la consola: se guarda por su ruta.
+        var cacheKey = Item.Kind == LaunchKind.Console ? Item.Path! : Item.Key;
+        if (IconCache.TryGetValue(cacheKey, out var cached))
         {
             Icon = cached;
             return;
@@ -404,7 +444,7 @@ public sealed partial class ResultItem : INotifyPropertyChanged
         var image = new WriteableBitmap(loaded.Width, loaded.Height);
         using (var stream = image.PixelBuffer.AsStream()) stream.Write(loaded.Pixels);
         image.Invalidate();
-        IconCache[Item.Key] = image;
+        IconCache[cacheKey] = image;
         Icon = image;
     }
 }

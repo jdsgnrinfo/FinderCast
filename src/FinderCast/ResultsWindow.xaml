@@ -42,6 +42,11 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Image Source="{x:Bind Icon, Mode=OneWay}" Width="26" Height="26" />
+                        <!-- Emojis y símbolos: el propio carácter, del tamaño del icono. -->
+                        <TextBlock Text="{x:Bind Glyph}" Width="26"
+                                   FontFamily="Segoe UI Emoji" FontSize="20" TextAlignment="Center"
+                                   Foreground="{ThemeResource FcTextBrush}"
+                                   VerticalAlignment="Center" />
                         <TextBlock Grid.Column="1" Text="{x:Bind Name}"
                                    FontFamily="{StaticResource FcTextFont}" FontSize="14"
                                    Foreground="{ThemeResource FcTextBrush}"
@@ -59,6 +64,42 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <!--
+            Emojis y símbolos (":nombre"): cuadrícula de casillas de 64 × 62, nueve por fila y
+            cuatro filas a la vista. El nombre del elegido sale en el pie.
+        -->
+        <GridView x:Name="EmojiGrid"
+                  Padding="12,8"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  AllowFocusOnInteraction="False"
+                  IsTabStop="False"
+                  Visibility="Collapsed">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Horizontal" ItemWidth="64" ItemHeight="62" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                    <Setter Property="Margin" Value="2" />
+                    <Setter Property="MinWidth" Value="0" />
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="CornerRadius" Value="8" />
+                    <Setter Property="AllowFocusOnInteraction" Value="False" />
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="local:ResultItem">
+                    <TextBlock Text="{x:Bind Glyph}"
+                               FontFamily="Segoe UI Emoji" FontSize="28"
+                               Foreground="{ThemeResource FcTextBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               ToolTipService.ToolTip="{x:Bind Name}" />
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
         <TextBlock x:Name="EmptyText"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    FontFamily="{StaticResource FcTextFont}" FontSize="{StaticResource FcBodySize}"
@@ -69,12 +110,18 @@
 
         <!-- Pie: los atajos de la acción elegida. -->
         <StackPanel Grid.Row="2" Padding="20,0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <!-- Con emojis: el nombre del elegido, en lugar del atajo de administrador. -->
+            <TextBlock x:Name="SelectedNameText" VerticalAlignment="Center" Margin="0,0,20,0"
+                       MaxWidth="380" TextTrimming="CharacterEllipsis"
+                       FontFamily="{StaticResource FcTextFont}" FontSize="12"
+                       Foreground="{ThemeResource FcSecondaryBrush}"
+                       Visibility="Collapsed" />
             <TextBlock x:Name="AdminActionText" VerticalAlignment="Center" Margin="0,0,6,0"
                        FontFamily="{StaticResource FcTextFont}" FontSize="12"
                        Foreground="{ThemeResource FcTextBrush}" />
             <!-- Las teclas cambian con el ajuste: se ponen desde el código. -->
             <StackPanel x:Name="AdminKeys" Orientation="Horizontal" Spacing="4" />
-            <Border Width="20" />
+            <Border x:Name="FooterGap" Width="20" />
             <TextBlock x:Name="OpenActionText" VerticalAlignment="Center" Margin="0,0,6,0"
                        FontFamily="{StaticResource FcTextFont}" FontSize="12"
                        Foreground="{ThemeResource FcTextBrush}" />

@@ -26,6 +26,8 @@ if ($LASTEXITCODE -ne 0) { throw 'La publicacion ha fallado.' }
 
 # La licencia viaja junto al .exe, como pide la licencia MIT a las copias.
 Copy-Item (Join-Path $raiz 'LICENSE') (Join-Path $destino 'LICENSE.txt')
+# Y el aviso de los datos de terceros que van dentro (emojibase-data, MIT).
+Copy-Item (Join-Path $raiz 'THIRD-PARTY-NOTICES.md') (Join-Path $destino 'THIRD-PARTY-NOTICES.txt')
 
 Write-Host '-> Comprimiendo'
 if (Test-Path $zip) { Remove-Item -Force $zip }

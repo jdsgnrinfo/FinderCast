@@ -22,14 +22,16 @@
 | Abrir o cerrar el lanzador | `Alt` `Espacio` (se cambia en los ajustes) |
 | Moverse por los resultados | `↑` / `↓` |
 | Abrir el resultado elegido | `Enter` o clic |
+| Copiar un emoji o símbolo | `:` y su nombre, por ejemplo `:corazon` o `:flecha` |
+| Ejecutar un comando de consola | `>` y el comando, por ejemplo `> ipconfig /all` |
 | Abrir como administrador | `Ctrl` `Enter` (se cambia en los ajustes) |
 | Cerrar | `Esc`, o hacer clic fuera |
 
 Busca entre los accesos directos del menú Inicio (los del usuario y los de todos los usuarios), las
 apps de Microsoft Store y
 entre sus propios comandos: *Ajustes de FinderCast* y *Salir de FinderCast*. No hace falta escribir
-el nombre entero ni con tildes: `vsc` encuentra *Visual Studio Code* y `configuracion` encuentra
-*Configuración*. Las apps que más abres suben en la lista.
+el nombre entero ni con tildes, y perdona errores de tecleo: `vsc` encuentra *Visual Studio Code*,
+`configuracion` encuentra *Configuración* y `discrod` encuentra *Discord*. Las apps que más abres suben en la lista.
 
 La app se queda en segundo plano con un icono en el área de notificación: un clic abre los
 ajustes y el clic derecho muestra *Abrir FinderCast* y *Salir*. Si ocultas el icono, volver a
@@ -103,4 +105,5 @@ Los ajustes se guardan en `%APPDATA%\FinderCast\settings.json`.
 
 ## Licencia
 
-FinderCast se distribuye bajo la [licencia MIT](LICENSE).
+FinderCast se distribuye bajo la [licencia MIT](LICENSE). Los nombres de los emojis salen de
+emojibase-data, también MIT: ver [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

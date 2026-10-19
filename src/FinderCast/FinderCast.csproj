@@ -34,6 +34,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Emojis y símbolos con sus nombres en español e inglés (scripts/generar-emojis.py). -->
+    <EmbeddedResource Include="Assets\Emoji.tsv" LogicalName="FinderCast.Assets.Emoji.tsv" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--
       WinForms solo para el icono y el menú de la bandeja, los mismos de ShutterGrid. Se referencia
       el framework a mano: con UseWindowsForms el SDK compilaría los XAML de WinUI como si fueran WPF.

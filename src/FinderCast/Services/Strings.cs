@@ -37,7 +37,10 @@ internal sealed record Strings
     public required string Application { get; init; }
     public required string Command { get; init; }
     public required string NoResults { get; init; }
+    public required string ConsoleKind { get; init; }
+    public required string ConsoleHint { get; init; }
     public required string OpenAction { get; init; }
+    public required string CopyAction { get; init; }
     public required string RunAsAdminAction { get; init; }
     public required string SettingsCommand { get; init; }
     public required string QuitCommand { get; init; }
@@ -68,7 +71,10 @@ internal sealed record Strings
         Application = "Aplicación",
         Command = "Comando",
         NoResults = "Sin resultados",
+        ConsoleKind = "Ejecutar en terminal",
+        ConsoleHint = "Escribe un comando de consola tras >",
         OpenAction = "Abrir",
+        CopyAction = "Copiar",
         RunAsAdminAction = "Abrir como administrador",
         SettingsCommand = "Ajustes de FinderCast",
         QuitCommand = "Salir de FinderCast",
@@ -98,7 +104,10 @@ internal sealed record Strings
         Application = "Application",
         Command = "Command",
         NoResults = "No results",
+        ConsoleKind = "Run in terminal",
+        ConsoleHint = "Type a console command after >",
         OpenAction = "Open",
+        CopyAction = "Copy",
         RunAsAdminAction = "Run as administrator",
         SettingsCommand = "FinderCast Settings",
         QuitCommand = "Quit FinderCast",

@@ -3,6 +3,22 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [0.3.0] - 2026-10-19
+
+### Añadido
+
+- **Comandos de consola** con el prefijo `>`: `> ipconfig /all` o `> winget upgrade --all` se
+  ejecutan en PowerShell (PowerShell 7 si está instalado), dentro de Windows Terminal si lo hay,
+  en una ventana que se queda abierta con el resultado. Con el atajo de administrador, la consola
+  se abre elevada.
+- **Emojis y símbolos** con el prefijo `:`: `:corazon`, `:flecha`, `:euro` buscan por nombre y
+  etiquetas, en español e inglés, entre casi 1.900 emojis y 70 símbolos (©, →, ≠, €, ½…). Se
+  muestran en una cuadrícula de nueve por fila que se recorre con las cuatro flechas; el pie
+  muestra el nombre del elegido y `Enter` lo copia al portapapeles.
+- **Búsqueda tolerante a errores de tecleo:** letras cambiadas, de más, de menos o dos al revés
+  (`discrod` → Discord, `fotoshop` → Photoshop, `goolge` → Google Chrome). Un error hasta 5 letras
+  y dos a partir de 6; estas coincidencias quedan por debajo de las exactas.
+
 ## [0.2.2] - 2026-10-17
 
 ### Añadido
@@ -68,6 +84,7 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.3.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.3.0
 [0.2.2]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.2
 [0.2.1]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.0

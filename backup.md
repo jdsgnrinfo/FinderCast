@@ -60,6 +60,34 @@ del ejecutable único aún no estaba publicado.
   esas apps (si hay alguna); desactivado, solo la barra. Probado con capturas en los dos estados.
 - Captura del lanzador en el README (`docs/lanzador.webp`).
 
+## 2026-10-19 · Versión 0.3.0: consola, búsqueda difusa y emojis
+
+- Prefijo `>` en la búsqueda (`Services/ConsoleCommand.cs`): el resto del texto es un único
+  resultado de tipo `LaunchKind.Console` («Ejecutar en terminal»). Con Enter se abre PowerShell
+  (`pwsh.exe` si está en el PATH; si no, Windows PowerShell) dentro de Windows Terminal (`wt.exe`)
+  si existe, con `-NoExit` para que se vea el resultado. El comando va en `-EncodedCommand`
+  (Base64 UTF-16): sin problemas de comillas ni del `;` de Windows Terminal. Con el atajo de
+  administrador se abre con `runas`. Probado con `> ipconfig /all`.
+- Con solo `>` escrito, la tarjeta muestra la ayuda «Escribe un comando de consola tras >».
+- Búsqueda difusa en `Search.TypoScore`: si no hay coincidencia exacta, por iniciales, parcial ni
+  de letras en orden, se mide la distancia de Damerau-Levenshtein (sustitución, inserción,
+  borrado y transposición de vecinas) entre lo escrito y el principio del nombre desde cada
+  palabra. Límite: 1 error hasta 5 letras, 2 desde 6, nada con menos de 3. Puntúa 200 − 30 × coste,
+  siempre por debajo de las demás. Probado: `discrod`, `fotoshop`, `goolge`, `chrme`.
+- Emojis y símbolos con el prefijo `:` (`Services/EmojiCatalog.cs`). La tabla
+  `Assets/Emoji.tsv` (1.967 filas, ~170 KB, va incrustada en el .exe) la genera
+  `scripts/generar-emojis.py`: descarga emojibase-data 15.3.2 (es + en, MIT, aviso en
+  `THIRD-PARTY-NOTICES.md`, que también va en el zip) y añade 70 símbolos a mano. Se busca por
+  nombre y etiquetas en los dos idiomas con la misma `Search.Score` (errores de tecleo incluidos;
+  las etiquetas puntúan 150 menos; a igualdad, el nombre más corto). `Enter` copia con
+  `Clipboard.SetContent` + `Flush`; el pie pasa a «Copiar [Enter]». Probado `:corazon`,
+  `:flecha`, `:euro` y la copia de `:fuego` (🔥 en el portapapeles).
+- Los emojis se ven en cuadrícula (`EmojiGrid`, un `GridView` en `ResultsWindow`, casillas de
+  64 × 62: nueve por fila y cuatro filas a la vista). `ResultsWindow.UseGrid` cambia entre la lista
+  y la cuadrícula y solo la visible recibe los resultados; el lanzador usa `ActiveList`. En la
+  cuadrícula ↑ ↓ saltan `GridColumns` y ← → una casilla (en modo emojis el cursor de la caja no
+  se mueve con ← →). El pie muestra el nombre del elegido. Probado con `:corazon` + → ↓.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

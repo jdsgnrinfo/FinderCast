@@ -4,6 +4,10 @@ internal enum LaunchKind
 {
     Application,
     Command,
+    /// <summary>Comando de consola escrito tras "&gt;".</summary>
+    Console,
+    /// <summary>Emoji o símbolo buscado tras ":", que se copia al portapapeles.</summary>
+    Emoji,
 }
 
 /// <summary>
@@ -12,14 +16,23 @@ internal enum LaunchKind
 /// </summary>
 internal sealed record LaunchItem(string Name, string Key, LaunchKind Kind)
 {
-    /// <summary>Ruta del acceso directo (solo aplicaciones).</summary>
+    /// <summary>Ruta del acceso directo (aplicaciones) o de la consola que ejecuta el comando.</summary>
     public string? Path { get; init; }
+
+    /// <summary>Carácter que se dibuja en lugar del icono y se copia (solo emojis y símbolos).</summary>
+    public string? Glyph { get; init; }
 
     /// <summary>Acción de un comando propio.</summary>
     public Action? Run { get; init; }
 
     /// <summary>Tipo de resultado, en el idioma actual.</summary>
-    public string KindLabel => Kind == LaunchKind.Application ? Strings.Current.Application : Strings.Current.Command;
+    public string KindLabel => Kind switch
+    {
+        LaunchKind.Application => Strings.Current.Application,
+        LaunchKind.Console => Strings.Current.ConsoleKind,
+        LaunchKind.Emoji => "",
+        _ => Strings.Current.Command,
+    };
 
     /// <summary>Nombre preparado para buscar (minúsculas y sin tildes), calculado una vez.</summary>
     public string SearchName { get; } = Search.Normalize(Name);
