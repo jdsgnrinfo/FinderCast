@@ -15,6 +15,9 @@ internal sealed class AppSettings
     /// <summary>Claves de las últimas apps abiertas, la más reciente primero.</summary>
     public List<string> RecentApps { get; set; } = [];
 
+    /// <summary>Claves de las apps ancladas sobre la búsqueda, en orden (como mucho 6).</summary>
+    public List<string> PinnedApps { get; set; } = [];
+
     /// <summary>Código del idioma ("es", "en"), o null para usar el de Windows.</summary>
     public string? Language { get; set; }
 

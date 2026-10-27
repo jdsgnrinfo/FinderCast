@@ -17,27 +17,31 @@ using WinRT.Interop;
 namespace FinderCast;
 
 /// <summary>
-/// El lanzador: dos tarjetas flotantes sobre Acrylic, la de búsqueda (esta ventana) y la de
-/// resultados (<see cref="ResultsWindow"/>), que aparecen con el atajo global en la pantalla del
-/// puntero, buscan mientras se escribe y se ocultan al abrir algo, con Esc o al perder el foco.
-/// Se maneja entera con el teclado (flechas, Enter, Esc).
+/// El lanzador: dos tarjetas flotantes sobre Acrylic, la de ancladas y búsqueda (esta ventana) y
+/// la de resultados (<see cref="ResultsWindow"/>). Aparece con el atajo global en la pantalla del puntero, busca mientras se escribe
+/// y se oculta al abrir algo, con Esc o al perder el foco. Se maneja entera con el teclado.
 /// </summary>
 public sealed partial class MainWindow : Window
 {
     private const double WidthDip = 600;
     private const double SearchHeightDip = 56;
+    // Fila de ancladas: 16 de margen superior + 44 de botón.
+    private const double PinnedHeightDip = 16 + 44;
     private const double GapDip = 12;
-    // Justo cinco filas, sin cortar la sexta: 5 × (48 de fila + 2 de margen) + 16 de relleno de
-    // la lista + 1 de la línea + 52 del pie. Si cambian esas medidas en ResultsWindow.xaml, aquí también.
-    private const double ResultsHeightDip = 5 * (48 + 2) + 16 + 1 + 52;
+    // Justo cinco filas, sin cortar la sexta: 5 × (44 de fila + 2 de margen) + 16 de relleno de la
+    // lista. Si cambian esas medidas en ResultsWindow.xaml, aquí también.
+    private const double ResultsHeightDip = 5 * (44 + 2) + 16;
+    private const int MaxPinned = 6;
 
     private readonly AppIndex _index;
     private readonly AppSettings _settings;
     private readonly SettingsStore _store;
     private readonly ObservableCollection<ResultItem> _results = [];
+    private readonly ObservableCollection<ResultItem> _pinned = [];
     private readonly IntPtr _hwnd;
     private readonly ResultsWindow _panel;
     private RectInt32 _panelBounds;
+    private bool _menuOpen;
     private bool _allowClose;
 
     internal MainWindow(AppIndex index, AppSettings settings, SettingsStore store)
@@ -69,15 +73,15 @@ public sealed partial class MainWindow : Window
         // se usa ExtendsContentIntoTitleBar: WinUI deja entonces una línea oscura en el borde superior.
         WindowChrome.UseNativeBorderWithoutTitleBar(this);
 
-        // El mismo borde en las dos tarjetas, tenga el foco la que lo tenga.
         if (Content is FrameworkElement content)
         {
             WindowChrome.UseFixedBorder(_hwnd, content.ActualTheme == ElementTheme.Dark);
             content.ActualThemeChanged += (_, _) => WindowChrome.UseFixedBorder(_hwnd, content.ActualTheme == ElementTheme.Dark);
         }
 
+        PinnedList.ItemsSource = _pinned;
         _panel = new ResultsWindow(_hwnd);
-        ApplyAdminShortcut();
+        _panel.ItemRightTapped += OnItemRightTapped;
         _panel.UseGrid(false, _results);
         // La lista de apps y la cuadrícula de emojis se manejan igual; solo se ve una.
         foreach (var list in new[] { _panel.List, _panel.Grid })
@@ -87,7 +91,6 @@ public sealed partial class MainWindow : Window
             {
                 foreach (var item in e.RemovedItems.OfType<ResultItem>()) item.IsSelected = false;
                 foreach (var item in e.AddedItems.OfType<ResultItem>()) item.IsSelected = true;
-                if (_panel.IsGrid) _panel.ShowSelectedName(Results.SelectedItem is ResultItem selected ? selected.Name : "");
             };
         }
 
@@ -99,10 +102,11 @@ public sealed partial class MainWindow : Window
         };
         Activated += (_, args) =>
         {
-            // Un clic en los resultados no cuenta como salir: se mira qué ventana queda delante.
-            if (args.WindowActivationState != WindowActivationState.Deactivated) return;
+            // El menú de anclar puede abrir su propia ventana: mientras está abierto no cuenta como salir.
+            if (args.WindowActivationState != WindowActivationState.Deactivated || _menuOpen) return;
             DispatcherQueue.TryEnqueue(() =>
             {
+                // Un clic en los resultados no cuenta como salir: se mira qué ventana queda delante.
                 var foreground = Native.GetForegroundWindow();
                 if (foreground == _panel.Hwnd)
                 {
@@ -135,23 +139,41 @@ public sealed partial class MainWindow : Window
         Native.GetCursorPos(out var cursor);
         var area = DisplayArea.GetFromPoint(new PointInt32(cursor.X, cursor.Y), DisplayAreaFallback.Nearest).WorkArea;
         var scale = Native.ScaleAt(cursor);
-        var width = (int)Math.Round(WidthDip * scale);
-        var searchHeight = (int)Math.Round(SearchHeightDip * scale);
-        var gap = (int)Math.Round(GapDip * scale);
-        var resultsHeight = (int)Math.Round(ResultsHeightDip * scale);
+        int Px(double dip) => (int)Math.Round(dip * scale);
+        var width = Px(WidthDip);
+        var topHeight = Px(PinnedHeightDip + SearchHeightDip);
+        var gap = Px(GapDip);
+        var resultsHeight = Px(ResultsHeightDip);
         var x = area.X + (area.Width - width) / 2;
-        var y = area.Y + (int)((area.Height - searchHeight - gap - resultsHeight) * 0.3);
-        AppWindow.MoveAndResize(new RectInt32(x, y, width, searchHeight));
-        // Los resultados aparecen debajo en cuanto se escribe algo (UpdateResults).
-        _panelBounds = new RectInt32(x, y + searchHeight + gap, width, resultsHeight);
+        var y = area.Y + (int)((area.Height - topHeight - gap - resultsHeight) * 0.3);
+        // Ninguna de las dos cambia de tamaño a la vista: Windows pintaría de negro lo nuevo.
+        AppWindow.MoveAndResize(new RectInt32(x, y, width, topHeight));
+        _panelBounds = new RectInt32(x, y + topHeight + gap, width, resultsHeight);
 
         _index.RefreshIfStale();
+        UpdatePinned();
         SearchBox.Text = "";
         UpdateResults();
 
         Activate();
         Native.SetForegroundWindow(_hwnd);
         SearchBox.Focus(FocusState.Programmatic);
+    }
+
+    /// <summary>
+    /// Prepara la cuadrícula de emojis al arrancar: lee la tabla en segundo plano y la dibuja una vez
+    /// fuera de la pantalla. Si no, el primer ":" tarda y la tarjeta se ve negra mientras se dibuja.
+    /// </summary>
+    public async void WarmUp()
+    {
+        var emojis = await Task.Run(() => EmojiCatalog.Find(""));
+        if (IsShown) return;
+        _panel.UseGrid(true, new ObservableCollection<ResultItem>(emojis.Select(e => new ResultItem(e))));
+        _panel.ShowAt(new RectInt32(-32000, -32000, 600, 300));
+        await Task.Delay(1000);
+        if (IsShown) return;
+        _panel.Hide();
+        _panel.UseGrid(false, _results);
     }
 
     public void HideLauncher()
@@ -170,27 +192,83 @@ public sealed partial class MainWindow : Window
     private const int RecentCount = 5;
 
     /// <summary>Las últimas apps abiertas que siguen instaladas, o ninguna si está desactivado.</summary>
-    private IReadOnlyList<LaunchItem> RecentItems()
+    private IReadOnlyList<LaunchItem> RecentItems() => _settings.ShowRecentApps ? [.. ByKeys(_settings.RecentApps).Take(RecentCount)] : [];
+
+    /// <summary>Las apps del índice con esas claves, en ese orden; las desinstaladas se saltan.</summary>
+    private IEnumerable<LaunchItem> ByKeys(IEnumerable<string> keys)
     {
-        if (!_settings.ShowRecentApps) return [];
         var byKey = _index.Items.ToDictionary(i => i.Key, StringComparer.OrdinalIgnoreCase);
-        return [.. _settings.RecentApps.Select(k => byKey.GetValueOrDefault(k)).OfType<LaunchItem>().Take(RecentCount)];
+        return keys.Select(k => byKey.GetValueOrDefault(k)).OfType<LaunchItem>();
     }
 
-    private ListViewBase Results => _panel.ActiveList;
+    private ListViewBase ActiveList => _panel.ActiveList;
 
-    private TextBlock EmptyText => _panel.Empty;
+    private bool IsGrid => _panel.IsGrid;
+
+    private int GridColumns => _panel.GridColumns;
 
     private void ApplyStrings()
     {
         var text = Strings.Current;
         SearchBox.PlaceholderText = text.SearchPlaceholder;
+        ToolTipService.SetToolTip(PinButton, text.PinApp);
     }
 
     private void OnSettingsClick(object sender, RoutedEventArgs e)
     {
         HideLauncher();
         SettingsRequested?.Invoke();
+    }
+
+    private void UpdatePinned()
+    {
+        _pinned.Clear();
+        foreach (var item in ByKeys(_settings.PinnedApps)) _pinned.Add(new ResultItem(item));
+        foreach (var item in _pinned) _ = item.LoadIconAsync();
+        PinButton.Visibility = _pinned.Count < MaxPinned ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void SetPinned(LaunchItem item, bool pinned)
+    {
+        _settings.PinnedApps.RemoveAll(k => k.Equals(item.Key, StringComparison.OrdinalIgnoreCase));
+        // Las desinstaladas dejan su hueco libre.
+        _settings.PinnedApps.RemoveAll(k => !_index.Contains(k));
+        if (pinned && _settings.PinnedApps.Count < MaxPinned) _settings.PinnedApps.Add(item.Key);
+        _store.Save(_settings);
+        UpdatePinned();
+    }
+
+    /// <summary>El "+": ancla la app elegida en los resultados.</summary>
+    private void OnPinClick(object sender, RoutedEventArgs e)
+    {
+        if (ActiveList.SelectedItem is ResultItem { Item.Kind: LaunchKind.Application } selected) SetPinned(selected.Item, true);
+        SearchBox.Focus(FocusState.Programmatic);
+    }
+
+    private void OnPinnedClick(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is ResultItem item) Launch(item.Item);
+    }
+
+    /// <summary>Clic derecho en una app (resultado o anclada): anclarla arriba o quitarla.</summary>
+    private void OnItemRightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        if ((e.OriginalSource as FrameworkElement)?.DataContext is not ResultItem { Item.Kind: LaunchKind.Application } result) return;
+        var pinned = _settings.PinnedApps.Contains(result.Item.Key, StringComparer.OrdinalIgnoreCase);
+        if (!pinned && _settings.PinnedApps.Count >= MaxPinned) return;
+
+        var option = new MenuFlyoutItem { Text = pinned ? Strings.Current.UnpinApp : Strings.Current.PinApp };
+        option.Click += (_, _) => SetPinned(result.Item, !pinned);
+        var menu = new MenuFlyout { Items = { option } };
+        menu.Opened += (_, _) => _menuOpen = true;
+        menu.Closed += (_, _) =>
+        {
+            _menuOpen = false;
+            Native.SetForegroundWindow(_hwnd);
+            SearchBox.Focus(FocusState.Programmatic);
+        };
+        menu.ShowAt((UIElement)sender, e.GetPosition((UIElement)sender));
+        e.Handled = true;
     }
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e) => UpdateResults();
@@ -207,17 +285,16 @@ public sealed partial class MainWindow : Window
             ? command.Length > 0 ? [ConsoleCommand.Item(command)] : []
             : emoji is not null ? EmojiCatalog.Find(emoji)
             : empty ? RecentItems() : Search.Rank(SearchBox.Text, _index.Items, _settings.Launches);
-        _panel.ShowCopyAction(emoji is not null);
         _panel.UseGrid(emoji is not null, _results);
         _results.Clear();
         foreach (var item in ranked) _results.Add(new ResultItem(item));
 
-        Results.SelectedIndex = _results.Count > 0 ? 0 : -1;
-        if (_results.Count > 0) Results.ScrollIntoView(_results[0]);
-        EmptyText.Text = command is not null ? Strings.Current.ConsoleHint : Strings.Current.NoResults;
-        EmptyText.Visibility = _results.Count == 0 && SearchBox.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ActiveList.SelectedIndex = _results.Count > 0 ? 0 : -1;
+        if (_results.Count > 0) ActiveList.ScrollIntoView(_results[0]);
+        _panel.Empty.Text = command is not null ? Strings.Current.ConsoleHint : Strings.Current.NoResults;
+        _panel.Empty.Visibility = _results.Count == 0 && SearchBox.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        // Sin nada escrito, solo la barra de búsqueda (o las recientes, si hay y están activadas).
+        // Sin nada escrito, solo ancladas y búsqueda (o las recientes, si hay y están activadas).
         if (empty && _results.Count == 0) _panel.Hide();
         else _panel.ShowAt(_panelBounds);
 
@@ -231,20 +308,20 @@ public sealed partial class MainWindow : Window
         {
             // En la cuadrícula de emojis, ↑ ↓ saltan una fila y ← → una casilla.
             case VirtualKey.Down:
-                MoveSelection(_panel.IsGrid ? _panel.GridColumns : +1);
+                MoveSelection(IsGrid ? GridColumns : +1);
                 break;
             case VirtualKey.Up:
-                MoveSelection(_panel.IsGrid ? -_panel.GridColumns : -1);
+                MoveSelection(IsGrid ? -GridColumns : -1);
                 break;
-            case VirtualKey.Right when _panel.IsGrid && _results.Count > 0:
+            case VirtualKey.Right when IsGrid && _results.Count > 0:
                 MoveSelection(+1);
                 break;
-            case VirtualKey.Left when _panel.IsGrid && _results.Count > 0:
+            case VirtualKey.Left when IsGrid && _results.Count > 0:
                 MoveSelection(-1);
                 break;
             case VirtualKey.Enter:
                 // Con la lista oculta, Enter no abre nada que no se vea.
-                if (_results.Count > 0 && Results.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
+                if (_results.Count > 0 && ActiveList.SelectedItem is ResultItem selected) Launch(selected.Item, LaunchModeFromKeys());
                 break;
             case VirtualKey.Escape:
                 HideLauncher();
@@ -265,9 +342,9 @@ public sealed partial class MainWindow : Window
     private void MoveSelection(int delta)
     {
         if (_results.Count == 0) return;
-        var index = Math.Clamp(Results.SelectedIndex + delta, 0, _results.Count - 1);
-        Results.SelectedIndex = index;
-        Results.ScrollIntoView(_results[index]);
+        var index = Math.Clamp(ActiveList.SelectedIndex + delta, 0, _results.Count - 1);
+        ActiveList.SelectedIndex = index;
+        ActiveList.ScrollIntoView(_results[index]);
     }
 
     private void OnResultClick(object sender, ItemClickEventArgs e)
@@ -277,9 +354,6 @@ public sealed partial class MainWindow : Window
 
     /// <summary>Con el atajo de los ajustes (Ctrl+Enter por defecto), como administrador.</summary>
     private LaunchMode LaunchModeFromKeys() => AdminShortcut.IsHeld(_settings.AdminShortcut) ? LaunchMode.RunAsAdmin : LaunchMode.Open;
-
-    /// <summary>Pone en el pie las teclas del atajo de administrador elegido en los ajustes.</summary>
-    public void ApplyAdminShortcut() => _panel.ShowAdminShortcut(_settings.AdminShortcut);
 
     private void Launch(LaunchItem item, LaunchMode mode = LaunchMode.Open)
     {
@@ -344,6 +418,17 @@ public sealed partial class ResultItem : INotifyPropertyChanged
     // Los iconos se reutilizan entre búsquedas: buscar no vuelve a pedirlos al Explorador.
     private static readonly Dictionary<string, ImageSource> IconCache = new(StringComparer.OrdinalIgnoreCase);
     private static BitmapImage? _appLogo;
+    // Píxeles de los iconos leídos de antemano, fuera del hilo de la interfaz (ver Preload).
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, (byte[] Pixels, int Width, int Height)?> Pixels = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Lee de antemano los iconos de las apps que aún no tiene, uno tras otro en segundo plano.</summary>
+    internal static void Preload(IReadOnlyList<LaunchItem> apps)
+    {
+        foreach (var app in apps)
+        {
+            if (app.Path is { } path && !Pixels.ContainsKey(app.Key)) Pixels[app.Key] = ShellIcon.Load(path, 64);
+        }
+    }
 
     internal ResultItem(LaunchItem item) => Item = item;
 
@@ -438,7 +523,7 @@ public sealed partial class ResultItem : INotifyPropertyChanged
 
         // Se pide al Shell fuera del hilo de la interfaz; 64 px se ven nítidos hasta el 225 % de escala.
         var path = Item.Path!;
-        var icon = await Task.Run(() => ShellIcon.Load(path, 64));
+        var icon = Pixels.TryGetValue(cacheKey, out var ready) ? ready : await Task.Run(() => ShellIcon.Load(path, 64));
         if (icon is not { } loaded) return;
 
         var image = new WriteableBitmap(loaded.Width, loaded.Height);

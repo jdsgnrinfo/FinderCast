@@ -7,12 +7,53 @@
     Title="FinderCast">
 
     <!--
-        Tarjeta de búsqueda del lanzador, sobre Acrylic. Los resultados van en su propia tarjeta
-        (ResultsWindow), justo debajo.
+        Tarjeta de arriba del lanzador, sobre Acrylic: apps ancladas y búsqueda. Los resultados van
+        en su propia tarjeta (ResultsWindow), justo debajo.
     -->
     <Grid x:Name="Root" KeyDown="OnRootKeyDown">
+        <Grid.Resources>
+            <!-- Botones de las ancladas y del "+": casilla translúcida, sin borde. -->
+            <Style x:Key="FcPinButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="64" />
+                <Setter Property="Height" Value="44" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="AllowFocusOnInteraction" Value="False" />
+                <Setter Property="Background" Value="{ThemeResource FcHoverBrush}" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="56" />
+        </Grid.RowDefinitions>
+
+        <!-- Apps ancladas (como mucho 6) y "+", que ancla la elegida en los resultados. -->
+        <StackPanel x:Name="PinnedBar" Orientation="Horizontal" Spacing="8" Padding="16,16,16,0">
+            <ItemsControl x:Name="PinnedList">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:ResultItem">
+                        <Button Style="{StaticResource FcPinButtonStyle}"
+                                ToolTipService.ToolTip="{x:Bind Name}"
+                                Click="OnPinnedClick" RightTapped="OnItemRightTapped">
+                            <Image Source="{x:Bind Icon, Mode=OneWay}" Width="24" Height="24" />
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button x:Name="PinButton" Style="{StaticResource FcPinButtonStyle}" Click="OnPinClick">
+                <FontIcon Glyph="&#xE710;" FontSize="16" Foreground="{ThemeResource FcTextBrush}" />
+            </Button>
+        </StackPanel>
+
         <!-- Búsqueda -->
-        <Grid x:Name="SearchBar" Padding="20,0,14,0" ColumnSpacing="12">
+        <Grid x:Name="SearchBar" Grid.Row="1" Padding="20,0,14,0" ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -54,6 +95,5 @@
                 <FontIcon Glyph="&#xE713;" FontSize="18" Foreground="{ThemeResource FcSecondaryBrush}" />
             </Button>
         </Grid>
-
     </Grid>
 </Window>

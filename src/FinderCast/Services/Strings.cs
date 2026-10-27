@@ -42,6 +42,8 @@ internal sealed record Strings
     public required string OpenAction { get; init; }
     public required string CopyAction { get; init; }
     public required string RunAsAdminAction { get; init; }
+    public required string PinApp { get; init; }
+    public required string UnpinApp { get; init; }
     public required string SettingsCommand { get; init; }
     public required string QuitCommand { get; init; }
 
@@ -67,7 +69,7 @@ internal sealed record Strings
         ShortcutFailed = "No se pudo activar el atajo {0}: lo usa otra app. Elige otro en los ajustes.",
         BuyMeACoffee = "Invítame un café",
         SpaceKey = "Espacio",
-        SearchPlaceholder = "Buscar aplicaciones…",
+        SearchPlaceholder = "Buscar aplicaciones y comandos…",
         Application = "Aplicación",
         Command = "Comando",
         NoResults = "Sin resultados",
@@ -76,6 +78,8 @@ internal sealed record Strings
         OpenAction = "Abrir",
         CopyAction = "Copiar",
         RunAsAdminAction = "Abrir como administrador",
+        PinApp = "Anclar arriba",
+        UnpinApp = "Quitar de arriba",
         SettingsCommand = "Ajustes de FinderCast",
         QuitCommand = "Salir de FinderCast",
         Open = "Abrir {0}",
@@ -100,7 +104,7 @@ internal sealed record Strings
         ShortcutFailed = "Couldn't enable the {0} shortcut: another app uses it. Pick another one in the settings.",
         BuyMeACoffee = "Buy me a coffee",
         SpaceKey = "Space",
-        SearchPlaceholder = "Search apps…",
+        SearchPlaceholder = "Search apps and commands…",
         Application = "Application",
         Command = "Command",
         NoResults = "No results",
@@ -109,6 +113,8 @@ internal sealed record Strings
         OpenAction = "Open",
         CopyAction = "Copy",
         RunAsAdminAction = "Run as administrator",
+        PinApp = "Pin to top",
+        UnpinApp = "Unpin from top",
         SettingsCommand = "FinderCast Settings",
         QuitCommand = "Quit FinderCast",
         Open = "Open {0}",

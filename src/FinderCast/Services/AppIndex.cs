@@ -111,6 +111,9 @@ internal sealed class AppIndex : IDisposable
     /// <summary>Aplicaciones y comandos, en una sola lista.</summary>
     public IReadOnlyList<LaunchItem> Items { get; private set; } = [];
 
+    /// <summary>Se lanza en un hilo de fondo al terminar cada lectura, con las apps encontradas.</summary>
+    public event Action<IReadOnlyList<LaunchItem>>? Scanned;
+
     /// <summary>Lee de nuevo las carpetas en un hilo de fondo.</summary>
     public void Refresh()
     {
@@ -120,6 +123,7 @@ internal sealed class AppIndex : IDisposable
             LocalizedNames.Clear();
             _apps = Scan();
             Items = [.. _apps, .. Commands];
+            Scanned?.Invoke(_apps);
         });
     }
 

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/lanzador.webp" alt="El lanzador de FinderCast con las últimas apps abiertas" width="720">
+  <img src="docs/lanzador.png" alt="El lanzador de FinderCast con apps ancladas y resultados de búsqueda" width="720">
 </p>
 
 ---
@@ -25,6 +25,8 @@
 | Copiar un emoji o símbolo | `:` y su nombre, por ejemplo `:corazon` o `:flecha` |
 | Ejecutar un comando de consola | `>` y el comando, por ejemplo `> ipconfig /all` |
 | Abrir como administrador | `Ctrl` `Enter` (se cambia en los ajustes) |
+| Anclar una app arriba (hasta 6) | `+` con la app elegida, o clic derecho en el resultado |
+| Quitar una app anclada | Clic derecho en ella |
 | Cerrar | `Esc`, o hacer clic fuera |
 
 Busca entre los accesos directos del menú Inicio (los del usuario y los de todos los usuarios), las
@@ -88,7 +90,8 @@ powershell -ExecutionPolicy Bypass -File scripts/publicar.ps1
 src/FinderCast/
   Program.cs              Entrada: una sola instancia; la segunda pide mostrar los ajustes.
   App.xaml(.cs)           Arranque: ajustes, índice, ventanas, atajo global y bandeja.
-  MainWindow.xaml(.cs)    El lanzador: Acrylic, sin bordes, búsqueda y resultados.
+  MainWindow.xaml(.cs)    El lanzador: Acrylic, sin bordes, apps ancladas y búsqueda.
+  ResultsWindow.xaml(.cs) Tarjeta de resultados bajo la búsqueda: lista de apps o cuadrícula de emojis.
   SettingsWindow.xaml(.cs) Ajustes con la construcción de la ventana de ShutterGrid, sobre Mica.
   Controls/               Controles de los ajustes dibujados a mano como en ShutterGrid: interruptor
                           de shadcn/ui con muelle, botón y menú desplegable de Arc UI, información

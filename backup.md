@@ -88,6 +88,22 @@ del ejecutable único aún no estaba publicado.
   cuadrícula ↑ ↓ saltan `GridColumns` y ← → una casilla (en modo emojis el cursor de la caja no
   se mueve con ← →). El pie muestra el nombre del elegido. Probado con `:corazon` + → ↓.
 
+## 2026-10-27 · Versión 0.4.0: apps ancladas
+
+- Fila de apps ancladas (hasta 6, `PinnedApps` en `settings.json`) sobre la búsqueda, en la
+  tarjeta de arriba. Se anclan con el `+` (la elegida en los resultados) o con clic derecho; clic
+  derecho en una anclada la quita. Casillas de 64 × 44, iconos de 24.
+- Sin el pie de la tarjeta de resultados. Filas de 44 e iconos de 22.
+- **Probado y descartado:** juntar ancladas, búsqueda y resultados en una sola ventana. Al
+  cambiar de alto a la vista, Windows pinta de negro lo nuevo hasta que WinUI lo dibuja, y el
+  Acrylic salía gris. Se vuelve a las dos ventanas, que nunca cambian de tamaño a la vista.
+- Iconos leídos de antemano: `AppIndex.Scanned` → `ResultItem.Preload` guarda los píxeles de
+  todas las apps en segundo plano.
+- Cuadrícula de emojis: el ancho de casilla sale del panel (576) entre 9, menos 1 px en total; con
+  64 exactos la novena no cabía por el redondeo de la escala.
+- `MainWindow.WarmUp` al arrancar: lee la tabla de emojis en segundo plano y dibuja la cuadrícula
+  un segundo fuera de la pantalla, para que el primer `:` no tarde ni salga negro.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

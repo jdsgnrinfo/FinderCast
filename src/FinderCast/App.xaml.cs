@@ -45,13 +45,15 @@ public partial class App : Application
         Strings.Current = Strings.For(_settings.Language);
 
         _index = new AppIndex(CreateCommands());
+        // Los iconos se piden al Shell en segundo plano: al buscar ya están listos.
+        _index.Scanned += ResultItem.Preload;
         _index.Refresh();
         Strings.Changed += () => _index.Commands = CreateCommands();
 
         _launcher = new MainWindow(_index, _settings, _store);
         _launcher.SettingsRequested += ShowSettings;
+        _launcher.WarmUp();
         _settingsWindow = new SettingsWindow(_settings, _store, ChangeHotKey);
-        _settingsWindow.AdminShortcutChanged += _launcher.ApplyAdminShortcut;
         _settingsWindow.TrayIconSettingChanged += () => _tray!.Visible = _settings.ShowTrayIcon;
 
         _messages = new MessageWindow();

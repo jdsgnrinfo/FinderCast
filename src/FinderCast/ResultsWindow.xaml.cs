@@ -3,6 +3,7 @@ using FinderCast.Services;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
 using WinRT.Interop;
@@ -63,46 +64,6 @@ public sealed partial class ResultsWindow : Window
 
     internal IntPtr Hwnd { get; }
 
-    /// <summary>Dibuja en el pie las teclas del atajo de administrador.</summary>
-    internal void ShowAdminShortcut(HotKeyModifiers modifiers)
-    {
-        AdminKeys.Children.Clear();
-        foreach (var key in AdminShortcut.Keys(modifiers))
-        {
-            var cap = new Controls.Outline
-            {
-                Radius = 6,
-                Height = 28,
-                MinWidth = 28,
-                Fill = (Brush)Application.Current.Resources["FcKeyFillBrush"],
-                Stroke = (Brush)Application.Current.Resources["FcKeyBorderBrush"],
-            };
-            cap.Children.Add(new TextBlock
-            {
-                Text = key,
-                Margin = new Thickness(8, 0, 8, 0),
-                Style = (Style)Application.Current.Resources["FcKeyCapTextStyle"],
-            });
-            AdminKeys.Children.Add(cap);
-        }
-    }
-
-    /// <summary>
-    /// Con emojis el pie solo muestra «Copiar [Enter]»: no hay nada que abrir como administrador.
-    /// </summary>
-    internal void ShowCopyAction(bool copy)
-    {
-        var admin = copy ? Visibility.Collapsed : Visibility.Visible;
-        AdminActionText.Visibility = admin;
-        AdminKeys.Visibility = admin;
-        FooterGap.Visibility = admin;
-        SelectedNameText.Visibility = copy ? Visibility.Visible : Visibility.Collapsed;
-        OpenActionText.Text = copy ? Strings.Current.CopyAction : Strings.Current.OpenAction;
-    }
-
-    /// <summary>Nombre del emoji elegido, en el pie.</summary>
-    internal void ShowSelectedName(string name) => SelectedNameText.Text = name;
-
     /// <summary>La lista de apps o la cuadrícula de emojis: la que se ve recibe los resultados.</summary>
     internal void UseGrid(bool grid, object items)
     {
@@ -116,8 +77,32 @@ public sealed partial class ResultsWindow : Window
 
     internal bool IsGrid { get; private set; }
 
+    /// <summary>Clic derecho en un resultado: el lanzador ofrece anclarlo.</summary>
+    internal event RightTappedEventHandler? ItemRightTapped;
+
+    private void OnRightTapped(object sender, RightTappedRoutedEventArgs e) => ItemRightTapped?.Invoke(sender, e);
+
     /// <summary>Casillas por fila de la cuadrícula, para mover la selección con ↑ y ↓.</summary>
-    internal int GridColumns => Math.Max(1, (int)((EmojiGrid.ActualWidth - EmojiGrid.Padding.Left - EmojiGrid.Padding.Right) / 64));
+    internal int GridColumns => EmojiColumns;
+
+    private const int EmojiColumns = 9;
+    private ItemsWrapGrid? _emojiPanel;
+
+    private void OnEmojiPanelLoaded(object sender, RoutedEventArgs e)
+    {
+        _emojiPanel = (ItemsWrapGrid)sender;
+        _emojiPanel.SizeChanged += (_, _) => FitEmojiGrid();
+        FitEmojiGrid();
+    }
+
+    /// <summary>Las nueve casillas de cada fila se reparten todo el ancho de la tarjeta.</summary>
+    private void FitEmojiGrid()
+    {
+        // El ancho del propio panel: la plantilla del GridView le quita algo más que su relleno.
+        var width = _emojiPanel?.ActualWidth ?? 0;
+        // Un poco menos del reparto exacto: con el redondeo de la escala, 9 × 64 = 576 ya no cabían.
+        if (width > 0) _emojiPanel!.ItemWidth = (width - 1) / EmojiColumns;
+    }
 
     internal ListViewBase ActiveList => IsGrid ? EmojiGrid : Results;
 
@@ -149,7 +134,5 @@ public sealed partial class ResultsWindow : Window
     {
         var text = Strings.Current;
         EmptyText.Text = text.NoResults;
-        OpenActionText.Text = text.OpenAction;
-        AdminActionText.Text = text.RunAsAdminAction;
     }
 }

@@ -3,6 +3,25 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [0.4.0] - 2026-10-27
+
+### Añadido
+
+- **Apps ancladas** sobre la búsqueda, hasta seis: se anclan con el `+` (la elegida en los
+  resultados) o con clic derecho en un resultado, y se quitan con clic derecho en la anclada.
+
+### Cambiado
+
+- La tarjeta de arriba lleva las ancladas y la búsqueda; los resultados siguen en la de abajo.
+- Iconos de los resultados algo más pequeños (22 px) y filas de 44.
+- Sin el pie de atajos; `Ctrl` `Enter` sigue abriendo como administrador.
+- La cuadrícula de emojis ocupa todo el ancho de la tarjeta.
+
+### Corregido
+
+- Los iconos de las apps y la tabla de emojis se preparan al arrancar: los resultados salen al
+  momento y la tarjeta ya no se ve negra la primera vez que se escribe `:`.
+
 ## [0.3.0] - 2026-10-19
 
 ### Añadido
@@ -84,6 +103,7 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.4.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.0
 [0.3.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.3.0
 [0.2.2]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.2
 [0.2.1]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.1
