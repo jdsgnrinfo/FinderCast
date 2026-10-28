@@ -35,9 +35,9 @@ entre sus propios comandos: *Ajustes de FinderCast* y *Salir de FinderCast*. No 
 el nombre entero ni con tildes, y perdona errores de tecleo: `vsc` encuentra *Visual Studio Code*,
 `configuracion` encuentra *Configuración* y `discrod` encuentra *Discord*. Las apps que más abres suben en la lista.
 
-La app se queda en segundo plano con un icono en el área de notificación: un clic abre los
-ajustes y el clic derecho muestra *Abrir FinderCast* y *Salir*. Si ocultas el icono, volver a
-abrir FinderCast desde el menú Inicio muestra los ajustes.
+La app se queda en segundo plano con una lupa en el área de notificación, blanca o negra según
+el tema de la barra de tareas: un clic abre el lanzador y el clic derecho muestra *Ajustes* y
+*Salir*. Si ocultas el icono, volver a abrir FinderCast desde el menú Inicio muestra los ajustes.
 
 ## Ajustes
 

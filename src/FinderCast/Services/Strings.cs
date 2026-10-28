@@ -45,7 +45,7 @@ internal sealed record Strings
     public required string QuitCommand { get; init; }
 
     // Bandeja del sistema.
-    public required string Open { get; init; }
+    public required string Settings { get; init; }
     public required string Quit { get; init; }
 
     public static readonly Strings Spanish = new()
@@ -76,7 +76,7 @@ internal sealed record Strings
         UnpinApp = "Quitar de arriba",
         SettingsCommand = "Ajustes de FinderCast",
         QuitCommand = "Salir de FinderCast",
-        Open = "Abrir {0}",
+        Settings = "Ajustes",
         Quit = "Salir",
     };
 
@@ -108,7 +108,7 @@ internal sealed record Strings
         UnpinApp = "Unpin from top",
         SettingsCommand = "FinderCast Settings",
         QuitCommand = "Quit FinderCast",
-        Open = "Open {0}",
+        Settings = "Settings",
         Quit = "Quit",
     };
 

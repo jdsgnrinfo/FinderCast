@@ -12,7 +12,7 @@
     -->
     <Grid>
         <ListView x:Name="Results"
-                  Padding="0,8"
+                  Padding="0,12"
                   SelectionMode="Single"
                   IsItemClickEnabled="True"
                   AllowFocusOnInteraction="False"
@@ -20,7 +20,7 @@
                   RightTapped="OnRightTapped">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-                    <Setter Property="Margin" Value="8,1" />
+                    <Setter Property="Margin" Value="12,1" />
                     <Setter Property="MinHeight" Value="0" />
                     <Setter Property="Padding" Value="12,0,16,0" />
                     <Setter Property="CornerRadius" Value="8" />
@@ -64,7 +64,7 @@
             cuatro filas a la vista.
         -->
         <GridView x:Name="EmojiGrid"
-                  Padding="12,8"
+                  Padding="12,12"
                   SelectionMode="Single"
                   IsItemClickEnabled="True"
                   AllowFocusOnInteraction="False"

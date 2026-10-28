@@ -5,6 +5,13 @@ y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+### Cambiado
+
+- **Icono de la bandeja:** una lupa que se ve blanca o negra según el tema de la barra de tareas
+  (y cambia al cambiarlo), del tamaño de los iconos de Wi-Fi y volumen. Un clic abre el lanzador;
+  el clic derecho muestra *Ajustes* y *Salir*.
+- Márgenes de 12 px en las dos tarjetas y fila de ancladas más compacta (casillas de 52 × 40).
+
 ### Corregido
 
 - Si un icono no se podía leer al arrancar, ya no se queda sin icono: se vuelve a pedir al mostrarlo.

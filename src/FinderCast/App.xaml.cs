@@ -59,7 +59,7 @@ public partial class App : Application
         _messages = new MessageWindow();
         _hotKey = new GlobalHotKey(_messages);
         _hotKey.Pressed += _launcher.Toggle;
-        _tray = new TrayIcon(ShowSettings, Quit)
+        _tray = new TrayIcon(() => _launcher.ShowLauncher(), ShowSettings, Quit)
         {
             Visible = _settings.ShowTrayIcon,
         };

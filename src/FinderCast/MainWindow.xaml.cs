@@ -25,12 +25,12 @@ public sealed partial class MainWindow : Window
 {
     private const double WidthDip = 600;
     private const double SearchHeightDip = 56;
-    // Fila de ancladas: 16 de margen superior + 44 de botón.
-    private const double PinnedHeightDip = 16 + 44;
+    // Fila de ancladas: 12 de margen superior (como los resultados) + 40 de botón.
+    private const double PinnedHeightDip = 12 + 40;
     private const double GapDip = 12;
-    // Justo cinco filas, sin cortar la sexta: 5 × (44 de fila + 2 de margen) + 16 de relleno de la
+    // Justo cinco filas, sin cortar la sexta: 5 × (44 de fila + 2 de margen) + 24 de relleno de la
     // lista. Si cambian esas medidas en ResultsWindow.xaml, aquí también.
-    private const double ResultsHeightDip = 5 * (44 + 2) + 16;
+    private const double ResultsHeightDip = 5 * (44 + 2) + 24;
     private const int MaxPinned = 6;
 
     private readonly AppIndex _index;

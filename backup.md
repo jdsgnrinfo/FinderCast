@@ -112,6 +112,16 @@ del ejecutable único aún no estaba publicado.
   usaban; `ResultItem.Preload` guardaba también los iconos que fallaban y ya no se reintentaban;
   la barra vuelve a «Buscar aplicaciones…», el texto elegido.
 
+- Márgenes de 12 px en las dos tarjetas (`PinnedBar` 12,12,12,0; lista `0,12` con filas a 12 del
+  borde; cuadrícula `12,12`). Ancladas de 52 × 40 con 6 de separación e iconos de 22.
+- Icono de la bandeja: `design/bandeja.svg` (lupa de 12 × 12) dibujado con GDI+ en
+  `TrayIcon.DrawLoupe`, trazo 1.4 y recuadro de 12.4 unidades: 13 × 13 px en pantalla, medido
+  contra Wi-Fi (12 × 9) y volumen (13 × 12). Blanco o negro según `SystemUsesLightTheme` (el tema
+  de la barra, no el de las apps); se redibuja con `SystemEvents.UserPreferenceChanged`. El tema
+  claro no se ha probado.
+- Bandeja: clic izquierdo abre el lanzador; el menú del clic derecho es *Ajustes* / *Salir*
+  (`Strings.Settings` sustituye a `Strings.Open`). Probado con clics reales.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).
