@@ -3,6 +3,13 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+### Corregido
+
+- Si un icono no se podía leer al arrancar, ya no se queda sin icono: se vuelve a pedir al mostrarlo.
+- El texto de la barra vuelve a ser «Buscar aplicaciones…».
+
 ## [0.4.0] - 2026-10-27
 
 ### Añadido

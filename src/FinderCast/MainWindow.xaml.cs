@@ -426,7 +426,8 @@ public sealed partial class ResultItem : INotifyPropertyChanged
     {
         foreach (var app in apps)
         {
-            if (app.Path is { } path && !Pixels.ContainsKey(app.Key)) Pixels[app.Key] = ShellIcon.Load(path, 64);
+            // Los que fallan no se guardan: al mostrarlos se vuelven a pedir, como antes.
+            if (app.Path is { } path && !Pixels.ContainsKey(app.Key) && ShellIcon.Load(path, 64) is { } icon) Pixels[app.Key] = icon;
         }
     }
 

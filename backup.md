@@ -104,6 +104,14 @@ del ejecutable único aún no estaba publicado.
 - `MainWindow.WarmUp` al arrancar: lee la tabla de emojis en segundo plano y dibuja la cuadrícula
   un segundo fuera de la pantalla, para que el primer `:` no tarde ni salga negro.
 
+## 2026-10-28 · Revisión de la 0.4.0 (sin publicar)
+
+- Revisada la 0.4.0 hecha en otro ordenador: compila sin avisos; búsqueda, recientes, emojis y
+  consola probados con capturas. Anclar y desanclar no se probó (cambiaría los ajustes reales).
+- Corregido: los textos del pie quitado (`OpenAction`, `CopyAction`, `RunAsAdminAction`) ya no se
+  usaban; `ResultItem.Preload` guardaba también los iconos que fallaban y ya no se reintentaban;
+  la barra vuelve a «Buscar aplicaciones…», el texto elegido.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

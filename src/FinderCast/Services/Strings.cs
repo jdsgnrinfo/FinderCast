@@ -39,9 +39,6 @@ internal sealed record Strings
     public required string NoResults { get; init; }
     public required string ConsoleKind { get; init; }
     public required string ConsoleHint { get; init; }
-    public required string OpenAction { get; init; }
-    public required string CopyAction { get; init; }
-    public required string RunAsAdminAction { get; init; }
     public required string PinApp { get; init; }
     public required string UnpinApp { get; init; }
     public required string SettingsCommand { get; init; }
@@ -69,15 +66,12 @@ internal sealed record Strings
         ShortcutFailed = "No se pudo activar el atajo {0}: lo usa otra app. Elige otro en los ajustes.",
         BuyMeACoffee = "Invítame un café",
         SpaceKey = "Espacio",
-        SearchPlaceholder = "Buscar aplicaciones y comandos…",
+        SearchPlaceholder = "Buscar aplicaciones…",
         Application = "Aplicación",
         Command = "Comando",
         NoResults = "Sin resultados",
         ConsoleKind = "Ejecutar en terminal",
         ConsoleHint = "Escribe un comando de consola tras >",
-        OpenAction = "Abrir",
-        CopyAction = "Copiar",
-        RunAsAdminAction = "Abrir como administrador",
         PinApp = "Anclar arriba",
         UnpinApp = "Quitar de arriba",
         SettingsCommand = "Ajustes de FinderCast",
@@ -104,15 +98,12 @@ internal sealed record Strings
         ShortcutFailed = "Couldn't enable the {0} shortcut: another app uses it. Pick another one in the settings.",
         BuyMeACoffee = "Buy me a coffee",
         SpaceKey = "Space",
-        SearchPlaceholder = "Search apps and commands…",
+        SearchPlaceholder = "Search apps…",
         Application = "Application",
         Command = "Command",
         NoResults = "No results",
         ConsoleKind = "Run in terminal",
         ConsoleHint = "Type a console command after >",
-        OpenAction = "Open",
-        CopyAction = "Copy",
-        RunAsAdminAction = "Run as administrator",
         PinApp = "Pin to top",
         UnpinApp = "Unpin from top",
         SettingsCommand = "FinderCast Settings",
