@@ -26,7 +26,9 @@
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
             <RowDefinition Height="48" />
-            <!-- Los dos atajos son un grupo: filas más bajas, más juntas. -->
+            <!-- Los atajos son un grupo: filas más bajas, más juntas. -->
+            <RowDefinition Height="42" />
+            <RowDefinition Height="42" />
             <RowDefinition Height="42" />
             <RowDefinition Height="42" />
             <RowDefinition Height="16" />
@@ -106,14 +108,34 @@
             <controls:ShortcutPicker x:Name="ShortcutPicker" Grid.Column="1" />
         </Grid>
 
-        <!-- Fila: atajo para abrir como administrador (la última, sin línea debajo). Se graba igual. -->
-        <Grid Grid.Row="12" Margin="24,0,24,3">
+        <!-- Fila: atajo para abrir como administrador. Se graba igual. -->
+        <Grid Grid.Row="12" Margin="24,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="AdminLabel" Style="{StaticResource FcRowLabelStyle}" />
             <controls:ShortcutPicker x:Name="AdminPicker" Grid.Column="1" />
+        </Grid>
+
+        <!-- Filas de ayuda, solo para leer: los prefijos de la búsqueda. Mismas teclas que los atajos. -->
+        <Grid Grid.Row="13" Margin="24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="ConsoleLabel" Style="{StaticResource FcRowLabelStyle}" />
+            <controls:ShortcutPicker x:Name="ConsoleKeys" Grid.Column="1" IsHitTestVisible="False" />
+        </Grid>
+
+        <!-- La última, sin línea debajo. -->
+        <Grid Grid.Row="14" Margin="24,0,24,3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="EmojiLabel" Style="{StaticResource FcRowLabelStyle}" />
+            <controls:ShortcutPicker x:Name="EmojiKeys" Grid.Column="1" IsHitTestVisible="False" />
         </Grid>
     </Grid>
 </Window>

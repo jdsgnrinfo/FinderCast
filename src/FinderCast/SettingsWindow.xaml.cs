@@ -29,7 +29,7 @@ public sealed partial class SettingsWindow : Window
 {
     private const double WidthDip = 360;
     private const double RowsTop = 170; // Bajo la barra de título.
-    private const double HeightDip = RowsTop + 48 * 4 + 42 * 2 + 16;
+    private const double HeightDip = RowsTop + 48 * 4 + 42 * 4 + 16;
 
     /// <summary>Página de donación (la misma que en ShutterGrid y SwiftLook).</summary>
     private const string DonationLink = "https://www.paypal.com/paypalme/jotica96";
@@ -386,6 +386,10 @@ public sealed partial class SettingsWindow : Window
         LanguageButton.Text = text.Name;
         ShortcutLabel.Text = text.Shortcut;
         AdminLabel.Text = text.AdminShortcut;
+        ConsoleLabel.Text = text.ConsoleShortcut;
+        ConsoleKeys.ShowKeys([Services.ConsoleCommand.Prefix.ToString(), text.CommandKey]);
+        EmojiLabel.Text = text.EmojiShortcut;
+        EmojiKeys.ShowKeys([Services.EmojiCatalog.Prefix.ToString(), text.NameKey]);
         if (!_adminRecorder.IsRecording) ShowAdminShortcut();
         if (!_recorder.IsRecording) ShowShortcut(); // "Espacio" / "Space" cambia con el idioma.
     }

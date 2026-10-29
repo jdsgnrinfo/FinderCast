@@ -3,6 +3,13 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+### Añadido
+
+- En los ajustes, junto a los atajos, cómo ejecutar un comando de consola (`>` `comando`) y cómo
+  buscar emojis y símbolos (`:` `nombre`).
+
 ## [0.4.1] - 2026-10-29
 
 ### Añadido

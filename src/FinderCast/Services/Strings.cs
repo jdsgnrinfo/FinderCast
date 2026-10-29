@@ -23,6 +23,10 @@ internal sealed record Strings
     public required string Language { get; init; }
     public required string Shortcut { get; init; }
     public required string AdminShortcut { get; init; }
+    public required string ConsoleShortcut { get; init; }
+    public required string EmojiShortcut { get; init; }
+    public required string CommandKey { get; init; }
+    public required string NameKey { get; init; }
     public required string PressShortcut { get; init; }
     public required string ShortcutInUse { get; init; }
     public required string ShortcutFailed { get; init; }
@@ -60,6 +64,10 @@ internal sealed record Strings
         Language = "Idioma",
         Shortcut = "Atajo para abrir",
         AdminShortcut = "Abrir como administrador",
+        ConsoleShortcut = "Ejecutar un comando de consola",
+        EmojiShortcut = "Buscar emojis y símbolos",
+        CommandKey = "comando",
+        NameKey = "nombre",
         PressShortcut = "Pulsa el atajo…",
         ShortcutInUse = "Ya está en uso",
         EndWithEnter = "Termina con Enter",
@@ -92,6 +100,10 @@ internal sealed record Strings
         Language = "Language",
         Shortcut = "Shortcut to open",
         AdminShortcut = "Run as administrator",
+        ConsoleShortcut = "Run a console command",
+        EmojiShortcut = "Find emojis and symbols",
+        CommandKey = "command",
+        NameKey = "name",
         PressShortcut = "Press the shortcut…",
         ShortcutInUse = "Already in use",
         EndWithEnter = "End with Enter",

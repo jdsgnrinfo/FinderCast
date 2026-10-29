@@ -136,6 +136,13 @@ del ejecutable único aún no estaba publicado.
   queda carpeta, acceso, proceso ni inicio). No probado: el asistente con ventanas ni actualizar
   encima de una versión anterior.
 
+## 2026-10-29 · Ayuda de los prefijos en los ajustes (sin publicar)
+
+- Dos filas más en el grupo de atajos de los ajustes, solo para leer: *Ejecutar un comando de
+  consola* `[>] [comando]` y *Buscar emojis y símbolos* `[:] [nombre]`. Usan `ShortcutPicker`
+  con `IsHitTestVisible="False"` para que las teclas sean idénticas a las de los atajos; los
+  prefijos salen de `ConsoleCommand.Prefix` y `EmojiCatalog.Prefix`. Probado con captura.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).
