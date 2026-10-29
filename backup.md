@@ -143,6 +143,24 @@ del ejecutable único aún no estaba publicado.
   con `IsHitTestVisible="False"` para que las teclas sean idénticas a las de los atajos; los
   prefijos salen de `ConsoleCommand.Prefix` y `EmojiCatalog.Prefix`. Probado con captura.
 
+## 2026-10-29 · Actualizaciones desde los ajustes (sin publicar)
+
+- La versión de los ajustes es más grande (12 px, fila de 20) y es un `PressTarget`: un clic
+  llama a `Services/Updater.cs`. Consulta `api.github.com/repos/jdsgnrinfo/FinderCast/releases/latest`
+  y, si la etiqueta es mayor que la versión en marcha, toma el `*-setup.exe` (solo de
+  `github.com/jdsgnrinfo/FinderCast/releases/download/`) con su `digest` `sha256:` (sin huella
+  no instala). Lo descarga a `%TEMP%\FinderCast-update`, comprueba la huella, lo lanza con
+  `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` y FinderCast se cierra (`UpdateStarted` → `Quit`).
+- `installer/FinderCast.iss`: en instalación silenciosa (`Check: WizardSilent`) vuelve a abrir
+  FinderCast con `--background`. Los instaladores hasta la 0.4.1 no lo hacen: al actualizar
+  desde la 0.4.1 a la siguiente sí se reabre, porque lo que cuenta es el instalador nuevo.
+- Probado: «Tienes la última versión» con la 0.4.1; y con una copia publicada como 0.4.0, clic →
+  «Instalando la versión 0.4.1…» → descarga, huella correcta, instalación silenciosa
+  (`unins000.dat` actualizado) y la copia se cierra. No probado: que se reabra (falta una release
+  con el instalador nuevo).
+- Cuidado al probar: si ya hay un FinderCast en marcha, la copia que se abre solo le pasa el
+  aviso a ese y se cierra.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

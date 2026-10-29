@@ -54,6 +54,7 @@ public partial class App : Application
         _launcher.SettingsRequested += ShowSettings;
         _launcher.WarmUp();
         _settingsWindow = new SettingsWindow(_settings, _store, ChangeHotKey);
+        _settingsWindow.UpdateStarted += Quit;
         _settingsWindow.TrayIconSettingChanged += () => _tray!.Visible = _settings.ShowTrayIcon;
 
         _messages = new MessageWindow();

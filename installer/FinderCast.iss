@@ -64,6 +64,8 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Explorer\StartupA
 
 [Run]
 Filename: "{app}\FinderCast.exe"; Description: "{cm:LaunchProgram,FinderCast}"; Flags: nowait postinstall skipifsilent
+; Actualización desde los ajustes (instalación silenciosa): se vuelve a abrir en segundo plano.
+Filename: "{app}\FinderCast.exe"; Parameters: "--background"; Flags: nowait; Check: WizardSilent
 
 [UninstallRun]
 ; Cerrar el que esté en marcha antes de borrar el .exe.

@@ -16,6 +16,11 @@ internal sealed record Strings
 
     // Ventana de ajustes.
     public required string Version { get; init; }
+    public required string CheckUpdates { get; init; }
+    public required string CheckingUpdates { get; init; }
+    public required string UpToDate { get; init; }
+    public required string InstallingUpdate { get; init; }
+    public required string UpdateFailed { get; init; }
     public required string StartWithWindows { get; init; }
     public required string StartupNotChanged { get; init; }
     public required string ShowTrayIcon { get; init; }
@@ -57,6 +62,11 @@ internal sealed record Strings
         Code = "es",
         Name = "Español",
         Version = "Versión {0}",
+        CheckUpdates = "Buscar actualizaciones",
+        CheckingUpdates = "Buscando actualizaciones…",
+        UpToDate = "Tienes la última versión",
+        InstallingUpdate = "Instalando la versión {0}…",
+        UpdateFailed = "No se pudo actualizar",
         StartWithWindows = "Abrir al iniciar Windows",
         StartupNotChanged = "No se pudo cambiar el inicio con Windows.",
         ShowTrayIcon = "Mostrar icono en la bandeja",
@@ -93,6 +103,11 @@ internal sealed record Strings
         Code = "en",
         Name = "English",
         Version = "Version {0}",
+        CheckUpdates = "Check for updates",
+        CheckingUpdates = "Checking for updates…",
+        UpToDate = "You're up to date",
+        InstallingUpdate = "Installing version {0}…",
+        UpdateFailed = "Couldn't update",
         StartWithWindows = "Open at Windows startup",
         StartupNotChanged = "Couldn't change starting with Windows.",
         ShowTrayIcon = "Show icon in the notification area",

@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
+using System.Net.Http;
 using FinderCast.Controls;
 using FinderCast.Interop;
 using FinderCast.Services;
@@ -56,6 +56,11 @@ public sealed partial class SettingsWindow : Window
 
     /// <summary>Se lanza cuando cambia el atajo para abrir como administrador.</summary>
     internal event Action? AdminShortcutChanged;
+
+    /// <summary>Se lanza al empezar a instalar una versión nueva: FinderCast tiene que cerrarse.</summary>
+    internal event Action? UpdateStarted;
+
+    private bool _checkingUpdates;
 
     internal SettingsWindow(AppSettings settings, SettingsStore store, Func<HotKey, bool> changeHotKey)
     {
@@ -132,6 +137,9 @@ public sealed partial class SettingsWindow : Window
             }
         };
         LogoLink.Click += OpenDonationPage;
+
+        VersionLink.ShowsHand = true;
+        VersionLink.Click += CheckForUpdates;
 
         ShortcutPicker.Click += StartRecording;
         _recorder.Recorded += hotKey => DispatcherQueue.TryEnqueue(() => FinishRecording(hotKey));
@@ -378,7 +386,8 @@ public sealed partial class SettingsWindow : Window
     private void ApplyStrings()
     {
         var text = Strings.Current;
-        VersionText.Text = string.Format(text.Version, Version);
+        if (!_checkingUpdates) ShowVersion();
+        Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(VersionLink, text.CheckUpdates);
         StartupLabel.Text = text.StartWithWindows;
         TrayLabel.Text = text.ShowTrayIcon;
         RecentLabel.Text = text.ShowRecentApps;
@@ -394,12 +403,42 @@ public sealed partial class SettingsWindow : Window
         if (!_recorder.IsRecording) ShowShortcut(); // "Espacio" / "Space" cambia con el idioma.
     }
 
-    private static string Version
+    private void ShowVersion() => VersionText.Text = string.Format(Strings.Current.Version, Updater.Current);
+
+    /// <summary>
+    /// Clic en la versión: busca una nueva en GitHub y, si la hay, la descarga y la instala en
+    /// silencio. Mientras tanto la versión muestra en qué paso va.
+    /// </summary>
+    private async void CheckForUpdates()
     {
-        get
+        if (_checkingUpdates) return;
+        _checkingUpdates = true;
+        VersionText.Text = Strings.Current.CheckingUpdates;
+        string result;
+        try
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0);
-            return $"{version.Major}.{version.Minor}.{version.Build}";
+            var release = await Updater.FindNewerAsync();
+            if (release is null)
+            {
+                result = Strings.Current.UpToDate;
+            }
+            else
+            {
+                VersionText.Text = string.Format(Strings.Current.InstallingUpdate, release.Version);
+                await Updater.InstallAsync(release);
+                UpdateStarted?.Invoke();
+                return;
+            }
         }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidDataException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException or KeyNotFoundException or System.ComponentModel.Win32Exception)
+        {
+            result = Strings.Current.UpdateFailed;
+        }
+
+        // El resultado se ve un momento y vuelve la versión.
+        VersionText.Text = result;
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        _checkingUpdates = false;
+        ShowVersion();
     }
 }

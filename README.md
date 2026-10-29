@@ -41,6 +41,8 @@ el tema de la barra de tareas: un clic abre el lanzador y el clic derecho muestr
 
 ## Ajustes
 
+- Buscar actualizaciones: clic en la versión, bajo el nombre. Si hay una nueva, se descarga e
+  instala sola.
 - Abrir al iniciar Windows (activado la primera vez).
 - Mostrar el icono en la bandeja.
 - Mostrar las 5 últimas apps abiertas al abrir el lanzador sin escribir nada (desactivado por defecto).

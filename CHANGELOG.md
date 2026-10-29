@@ -7,6 +7,9 @@ y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- **Actualizaciones:** un clic en la versión, en los ajustes (ahora más grande), busca una nueva en
+  GitHub. Si la hay, descarga su instalador, comprueba que es el publicado (huella SHA-256) y lo
+  instala en silencio; FinderCast se cierra y vuelve a abrirse ya actualizado.
 - En los ajustes, junto a los atajos, cómo ejecutar un comando de consola (`>` `comando`) y cómo
   buscar emojis y símbolos (`:` `nombre`).
 
