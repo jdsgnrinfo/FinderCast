@@ -104,7 +104,7 @@ del ejecutable único aún no estaba publicado.
 - `MainWindow.WarmUp` al arrancar: lee la tabla de emojis en segundo plano y dibuja la cuadrícula
   un segundo fuera de la pantalla, para que el primer `:` no tarde ni salga negro.
 
-## 2026-10-28 · Revisión de la 0.4.0 (sin publicar)
+## 2026-10-28 · Revisión de la 0.4.0 (publicada en la 0.4.1)
 
 - Revisada la 0.4.0 hecha en otro ordenador: compila sin avisos; búsqueda, recientes, emojis y
   consola probados con capturas. Anclar y desanclar no se probó (cambiaría los ajustes reales).
@@ -121,6 +121,20 @@ del ejecutable único aún no estaba publicado.
   claro no se ha probado.
 - Bandeja: clic izquierdo abre el lanzador; el menú del clic derecho es *Ajustes* / *Salir*
   (`Strings.Settings` sustituye a `Strings.Open`). Probado con clics reales.
+
+## 2026-10-29 · Versión 0.4.1: instalador
+
+- `installer/FinderCast.iss` (Inno Setup 6.7.3, instalado con `winget --scope user`). Lo compila
+  `scripts/publicar.ps1` tras el zip, con la carpeta portable como origen: genera
+  `artifacts/FinderCast-<versión>-setup.exe` (~73 MB). Si no hay Inno Setup, solo avisa.
+- Por usuario (`PrivilegesRequired=lowest`, `{autopf}` = `%LocalAppData%\Programs\FinderCast`),
+  español e inglés, `AppId` fijo `{4AD21CBC-C2C1-4168-A9C0-140C56591AE4}` (no cambiarlo: es lo
+  que hace que una versión nueva actualice la instalada). `CloseApplications=force` para cerrar
+  la que está en la bandeja al actualizar; al desinstalar, `taskkill` y borra los valores `Run` y
+  `StartupApproved\Run`. Los ajustes de `%APPDATA%\FinderCast` se conservan.
+- Probado en silencio: instalar, abrir (se apunta solo al inicio de Windows), desinstalar (no
+  queda carpeta, acceso, proceso ni inicio). No probado: el asistente con ventanas ni actualizar
+  encima de una versión anterior.
 
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.

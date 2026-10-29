@@ -3,7 +3,14 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
-## [Sin publicar]
+## [0.4.1] - 2026-10-29
+
+### Añadido
+
+- **Instalador** (`FinderCast-<versión>-setup.exe`), además del portable: se instala para el
+  usuario actual sin permisos de administrador, con acceso en el menú Inicio y desinstalador en
+  *Configuración → Aplicaciones*. Al desinstalar se cierra FinderCast y se quita del inicio de
+  Windows; los ajustes se conservan.
 
 ### Cambiado
 
@@ -117,6 +124,7 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.4.1]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.1
 [0.4.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.0
 [0.3.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.3.0
 [0.2.2]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.2.2

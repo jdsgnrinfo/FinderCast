@@ -54,12 +54,17 @@ el tema de la barra de tareas: un clic abre el lanzador y el clic derecho muestr
 
 ## Descargar
 
-1. Descarga `FinderCast-<versión>-portable.zip` desde [Releases](../../releases).
-2. Descomprímelo donde quieras y abre `FinderCast.exe`.
+Desde [Releases](../../releases), en dos formatos:
 
-No hace falta instalar nada: el programa lleva dentro .NET y el Windows App SDK. La primera vez
-tarda un poco más en abrirse, porque prepara sus partes en la carpeta temporal. Para quitarlo,
-usa **Salir** en el menú de la bandeja y borra el `.exe`. Como el ejecutable no está firmado, la
+- **Instalador** (`FinderCast-<versión>-setup.exe`): se instala solo para tu usuario, sin pedir
+  permisos de administrador, con acceso en el menú Inicio. Se desinstala desde *Configuración →
+  Aplicaciones*; tus ajustes se conservan por si lo vuelves a instalar. Instalar una versión nueva
+  actualiza la que tengas.
+- **Portable** (`FinderCast-<versión>-portable.zip`): descomprímelo donde quieras y abre
+  `FinderCast.exe`. Para quitarlo, usa **Salir** en el menú de la bandeja y borra el `.exe`.
+
+No hace falta nada más: el programa lleva dentro .NET y el Windows App SDK. La primera vez tarda
+un poco más en abrirse, porque prepara sus partes en la carpeta temporal. Como no está firmado, la
 primera vez Windows SmartScreen puede pedir confirmación (*Más información → Ejecutar de todas formas*).
 
 **Requisitos:** Windows 10 (versión 2004 o posterior) u 11, de 64 bits. Acrylic y Mica se ven en
@@ -77,8 +82,10 @@ dotnet build
 El ejecutable queda en `src/FinderCast/bin/Debug/net10.0-windows10.0.19041.0/win-x64/FinderCast.exe`.
 Lleva el Windows App SDK dentro, así que no hace falta instalar nada más.
 
-Paquete de una versión: un único `FinderCast.exe` comprimido, en
-`artifacts/FinderCast-<versión>-portable.zip` (la versión sale de `Directory.Build.props`):
+Paquetes de una versión (la versión sale de `Directory.Build.props`): el portable
+`artifacts/FinderCast-<versión>-portable.zip`, un único `FinderCast.exe` comprimido, y el
+instalador `artifacts/FinderCast-<versión>-setup.exe` (`installer/FinderCast.iss`, necesita
+[Inno Setup 6](https://jrsoftware.org/isinfo.php): `winget install JRSoftware.InnoSetup`):
 
 ```bash
 powershell -ExecutionPolicy Bypass -File scripts/publicar.ps1
