@@ -3,7 +3,7 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
-## [Sin publicar]
+## [0.4.2] - 2026-10-29
 
 ### Añadido
 
@@ -134,6 +134,7 @@ Primera versión.
 - **Icono en la bandeja** con *Abrir FinderCast* y *Salir*. Abrir el `.exe` otra vez muestra los
   ajustes.
 
+[0.4.2]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.2
 [0.4.1]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.1
 [0.4.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.4.0
 [0.3.0]: https://github.com/jdsgnrinfo/FinderCast/releases/tag/v0.3.0

@@ -136,14 +136,14 @@ del ejecutable único aún no estaba publicado.
   queda carpeta, acceso, proceso ni inicio). No probado: el asistente con ventanas ni actualizar
   encima de una versión anterior.
 
-## 2026-10-29 · Ayuda de los prefijos en los ajustes (sin publicar)
+## 2026-10-29 · Ayuda de los prefijos en los ajustes (versión 0.4.2)
 
 - Dos filas más en el grupo de atajos de los ajustes, solo para leer: *Ejecutar un comando de
   consola* `[>] [comando]` y *Buscar emojis y símbolos* `[:] [nombre]`. Usan `ShortcutPicker`
   con `IsHitTestVisible="False"` para que las teclas sean idénticas a las de los atajos; los
   prefijos salen de `ConsoleCommand.Prefix` y `EmojiCatalog.Prefix`. Probado con captura.
 
-## 2026-10-29 · Actualizaciones desde los ajustes (sin publicar)
+## 2026-10-29 · Actualizaciones desde los ajustes (versión 0.4.2)
 
 - La versión de los ajustes es más grande (12 px, fila de 20) y es un `PressTarget`: un clic
   llama a `Services/Updater.cs`. Consulta `api.github.com/repos/jdsgnrinfo/FinderCast/releases/latest`
