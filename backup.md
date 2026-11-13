@@ -161,7 +161,7 @@ del ejecutable único aún no estaba publicado.
 - Cuidado al probar: si ya hay un FinderCast en marcha, la copia que se abre solo le pasa el
   aviso a ese y se cierra.
 
-## 2026-11-13 · Interruptor de las apps ancladas
+## 2026-11-13 · Interruptor de las apps ancladas (versión 0.4.3)
 
 - Ajuste `ShowPinnedApps` (activado por defecto, así nada cambia para quien ya ancla apps). Fila
   *Mostrar las apps ancladas* en los ajustes, tras la de las últimas apps (ventana 48 px más alta).
