@@ -29,7 +29,7 @@ public sealed partial class SettingsWindow : Window
 {
     private const double WidthDip = 360;
     private const double RowsTop = 170; // Bajo la barra de título.
-    private const double HeightDip = RowsTop + 48 * 4 + 42 * 4 + 16;
+    private const double HeightDip = RowsTop + 48 * 5 + 42 * 4 + 16;
 
     /// <summary>Página de donación (la misma que en ShutterGrid y SwiftLook).</summary>
     private const string DonationLink = "https://www.paypal.com/paypalme/jotica96";
@@ -101,6 +101,11 @@ public sealed partial class SettingsWindow : Window
         RefreshValues();
 
         StartupSwitch.Toggled += SetStartWithWindows;
+        PinnedSwitch.Toggled += on =>
+        {
+            _settings.ShowPinnedApps = on;
+            _store.Save(_settings);
+        };
         RecentSwitch.Toggled += on =>
         {
             _settings.ShowRecentApps = on;
@@ -238,6 +243,7 @@ public sealed partial class SettingsWindow : Window
         StartupSwitch.Jump(StartupRegistration.IsEnabled);
         TraySwitch.Jump(_settings.ShowTrayIcon);
         RecentSwitch.Jump(_settings.ShowRecentApps);
+        PinnedSwitch.Jump(_settings.ShowPinnedApps);
     }
 
     // Mientras el menú de idioma está abierto se queda las teclas: flechas, Enter, Esc.
@@ -391,6 +397,7 @@ public sealed partial class SettingsWindow : Window
         StartupLabel.Text = text.StartWithWindows;
         TrayLabel.Text = text.ShowTrayIcon;
         RecentLabel.Text = text.ShowRecentApps;
+        PinnedLabel.Text = text.ShowPinnedApps;
         LanguageLabel.Text = text.Language;
         LanguageButton.Text = text.Name;
         ShortcutLabel.Text = text.Shortcut;

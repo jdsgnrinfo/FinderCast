@@ -161,6 +161,14 @@ del ejecutable único aún no estaba publicado.
 - Cuidado al probar: si ya hay un FinderCast en marcha, la copia que se abre solo le pasa el
   aviso a ese y se cierra.
 
+## 2026-11-13 · Interruptor de las apps ancladas
+
+- Ajuste `ShowPinnedApps` (activado por defecto, así nada cambia para quien ya ancla apps). Fila
+  *Mostrar las apps ancladas* en los ajustes, tras la de las últimas apps (ventana 48 px más alta).
+- Desactivado: `PinnedBar` oculta y la ventana de la búsqueda pierde los 52 px de la fila; los
+  resultados se colocan pegados a la barra. El clic derecho no ofrece anclar. `PinnedApps` no se
+  borra. Probado con capturas en los dos estados, con resultados y en los ajustes.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

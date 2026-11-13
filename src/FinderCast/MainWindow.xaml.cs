@@ -141,7 +141,7 @@ public sealed partial class MainWindow : Window
         var scale = Native.ScaleAt(cursor);
         int Px(double dip) => (int)Math.Round(dip * scale);
         var width = Px(WidthDip);
-        var topHeight = Px(PinnedHeightDip + SearchHeightDip);
+        var topHeight = Px((_settings.ShowPinnedApps ? PinnedHeightDip : 0) + SearchHeightDip);
         var gap = Px(GapDip);
         var resultsHeight = Px(ResultsHeightDip);
         var x = area.X + (area.Width - width) / 2;
@@ -222,6 +222,7 @@ public sealed partial class MainWindow : Window
 
     private void UpdatePinned()
     {
+        PinnedBar.Visibility = _settings.ShowPinnedApps ? Visibility.Visible : Visibility.Collapsed;
         _pinned.Clear();
         foreach (var item in ByKeys(_settings.PinnedApps)) _pinned.Add(new ResultItem(item));
         foreach (var item in _pinned) _ = item.LoadIconAsync();
@@ -253,6 +254,7 @@ public sealed partial class MainWindow : Window
     /// <summary>Clic derecho en una app (resultado o anclada): anclarla arriba o quitarla.</summary>
     private void OnItemRightTapped(object sender, RightTappedRoutedEventArgs e)
     {
+        if (!_settings.ShowPinnedApps) return;
         if ((e.OriginalSource as FrameworkElement)?.DataContext is not ResultItem { Item.Kind: LaunchKind.Application } result) return;
         var pinned = _settings.PinnedApps.Contains(result.Item.Key, StringComparer.OrdinalIgnoreCase);
         if (!pinned && _settings.PinnedApps.Count >= MaxPinned) return;

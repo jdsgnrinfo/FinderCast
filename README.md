@@ -46,6 +46,7 @@ el tema de la barra de tareas: un clic abre el lanzador y el clic derecho muestr
 - Abrir al iniciar Windows (activado la primera vez).
 - Mostrar el icono en la bandeja.
 - Mostrar las 5 últimas apps abiertas al abrir el lanzador sin escribir nada (desactivado por defecto).
+- Mostrar las apps ancladas sobre la búsqueda (activado por defecto).
 - Idioma: español o inglés (por defecto, el de Windows). Cambia al momento, sin reiniciar.
 - Abrir como administrador: se graba igual, con una o más modificadoras y `Enter`.
 - Atajo para abrir: haz clic en las teclas y pulsa la nueva combinación (`Esc` cancela). Si otra

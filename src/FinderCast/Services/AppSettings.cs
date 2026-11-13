@@ -15,6 +15,9 @@ internal sealed class AppSettings
     /// <summary>Claves de las últimas apps abiertas, la más reciente primero.</summary>
     public List<string> RecentApps { get; set; } = [];
 
+    /// <summary>Si se muestra la fila de apps ancladas sobre la búsqueda.</summary>
+    public bool ShowPinnedApps { get; set; } = true;
+
     /// <summary>Claves de las apps ancladas sobre la búsqueda, en orden (como mucho 6).</summary>
     public List<string> PinnedApps { get; set; } = [];
 

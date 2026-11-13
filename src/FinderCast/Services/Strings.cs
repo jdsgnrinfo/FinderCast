@@ -25,6 +25,7 @@ internal sealed record Strings
     public required string StartupNotChanged { get; init; }
     public required string ShowTrayIcon { get; init; }
     public required string ShowRecentApps { get; init; }
+    public required string ShowPinnedApps { get; init; }
     public required string Language { get; init; }
     public required string Shortcut { get; init; }
     public required string AdminShortcut { get; init; }
@@ -71,6 +72,7 @@ internal sealed record Strings
         StartupNotChanged = "No se pudo cambiar el inicio con Windows.",
         ShowTrayIcon = "Mostrar icono en la bandeja",
         ShowRecentApps = "Mostrar las 5 últimas apps abiertas",
+        ShowPinnedApps = "Mostrar las apps ancladas",
         Language = "Idioma",
         Shortcut = "Atajo para abrir",
         AdminShortcut = "Abrir como administrador",
@@ -112,6 +114,7 @@ internal sealed record Strings
         StartupNotChanged = "Couldn't change starting with Windows.",
         ShowTrayIcon = "Show icon in the notification area",
         ShowRecentApps = "Show the last 5 apps opened",
+        ShowPinnedApps = "Show pinned apps",
         Language = "Language",
         Shortcut = "Shortcut to open",
         AdminShortcut = "Run as administrator",
