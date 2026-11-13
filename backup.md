@@ -169,6 +169,13 @@ del ejecutable único aún no estaba publicado.
   resultados se colocan pegados a la barra. El clic derecho no ofrece anclar. `PinnedApps` no se
   borra. Probado con capturas en los dos estados, con resultados y en los ajustes.
 
+## 2026-11-13 · Búsqueda en internet con "/"
+
+- `/texto` en el lanzador: no despliega la tarjeta de resultados (`UpdateResults` la oculta) y
+  `Enter` abre `https://www.google.com/search?q=<texto>` con `Process.Start` (navegador
+  predeterminado; si abre pestaña o ventana lo decide el navegador). Probado: se abrió Chrome con
+  la búsqueda. No añadido a la ayuda de prefijos de los ajustes.
+
 **Ideas pendientes**
 - Más comandos propios: bloquear, suspender, reiniciar, apagar, vaciar la papelera, abrir carpetas.
 - Volver a poder arrastrar el lanzador (se perdió al quitar el pie arrastrable).

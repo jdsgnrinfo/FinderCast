@@ -23,6 +23,7 @@
 | Moverse por los resultados | `↑` / `↓` |
 | Abrir el resultado elegido | `Enter` o clic |
 | Copiar un emoji o símbolo | `:` y su nombre, por ejemplo `:corazon` o `:flecha` |
+| Buscar en internet | `/` y la búsqueda, por ejemplo `/para que sirve github`, y `Enter`: se abre Google en el navegador predeterminado |
 | Ejecutar un comando de consola | `>` y el comando, por ejemplo `> ipconfig /all` |
 | Abrir como administrador | `Ctrl` `Enter` (se cambia en los ajustes) |
 | Anclar una app arriba (hasta 6) | `+` con la app elegida, o clic derecho en el resultado |

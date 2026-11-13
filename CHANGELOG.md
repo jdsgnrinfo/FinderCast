@@ -3,6 +3,13 @@
 Todas las versiones de FinderCast. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y la numeración, [versionado semántico](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+### Añadido
+
+- **Buscar en internet** con el prefijo `/`: `/para que sirve github` y `Enter` abre la búsqueda en
+  Google con el navegador predeterminado. Mientras se escribe no se despliega ningún resultado.
+
 ## [0.4.3] - 2026-11-13
 
 ### Añadido

@@ -275,8 +275,23 @@ public sealed partial class MainWindow : Window
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e) => UpdateResults();
 
+    /// <summary>"/texto": lo que se busca en Google al pulsar Enter, o null si no empieza por "/".</summary>
+    private static string? WebQuery(string text)
+    {
+        var trimmed = text.TrimStart();
+        return trimmed.StartsWith('/') ? trimmed[1..].Trim() : null;
+    }
+
     private void UpdateResults()
     {
+        // "/texto" no despliega nada: Enter lo busca en internet.
+        if (WebQuery(SearchBox.Text) is not null)
+        {
+            _results.Clear();
+            _panel.Hide();
+            return;
+        }
+
         var empty = SearchBox.Text.Trim().Length == 0;
         // "> comando": un único resultado que lo ejecuta en la consola.
         var command = ConsoleCommand.Parse(SearchBox.Text);
@@ -320,6 +335,18 @@ public sealed partial class MainWindow : Window
                 break;
             case VirtualKey.Left when IsGrid && _results.Count > 0:
                 MoveSelection(-1);
+                break;
+            case VirtualKey.Enter when WebQuery(SearchBox.Text) is { Length: > 0 } query:
+                HideLauncher();
+                try
+                {
+                    // Con el navegador predeterminado, como cualquier enlace.
+                    Process.Start(new ProcessStartInfo("https://www.google.com/search?q=" + Uri.EscapeDataString(query)) { UseShellExecute = true });
+                }
+                catch (Win32Exception)
+                {
+                    // Sin navegador predeterminado: no hay dónde abrirlo.
+                }
                 break;
             case VirtualKey.Enter:
                 // Con la lista oculta, Enter no abre nada que no se vea.
